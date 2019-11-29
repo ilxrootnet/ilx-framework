@@ -109,7 +109,7 @@ class FrameModule extends IlxModule
         // A fájlok másolását a Twig modulon keresztül a resource modul végzi, így itt nincs tennivaló.
     }
 
-    public function addStyleSheet($group_name, $stylesheet_path) {
+    public function addStyleSheet($group_name, $stylesheet_path, $link=false) {
 
         $css_files = self::iterateOnDir($stylesheet_path, null);
         foreach ($css_files as $css_file) {
@@ -121,10 +121,10 @@ class FrameModule extends IlxModule
 
         /** @var ResourceModule $resource_module */
         $resource_module = ModuleManager::get("Resource");
-        $resource_module->addCssPath($stylesheet_path, $group_name, ResourcePath::HARD_COPY);
+        $resource_module->addCssPath($stylesheet_path, $group_name, $link ? ResourcePath::SOFT_COPY : ResourcePath::HARD_COPY);
     }
 
-    public function addJavascript($group_name, $javascript_path) {
+    public function addJavascript($group_name, $javascript_path, $link = false) {
 
         $js_files = self::iterateOnDir($javascript_path, null);
         foreach ($js_files as $js_file) {
@@ -137,7 +137,7 @@ class FrameModule extends IlxModule
 
         /** @var ResourceModule $resource_module */
         $resource_module = ModuleManager::get("Resource");
-        $resource_module->addCssPath($javascript_path, $group_name, ResourcePath::HARD_COPY);
+        $resource_module->addJsPath($javascript_path, $group_name, $link ? ResourcePath::SOFT_COPY : ResourcePath::HARD_COPY);
     }
 
     private static function iterateOnDir($base, $dir_offset) {
