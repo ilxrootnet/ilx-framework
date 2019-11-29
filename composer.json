@@ -2,7 +2,7 @@
     "name": "ilxrootnet/ilx-framework",
     "type": "library",
     "description": "php framework",
-    "keywords": ["framework", "kodiak],
+    "keywords": ["framework", "kodiak"],
     "license": "Apache-2.0",
     "homepage": "https://github.com/ilxrootnet/ilx-framework",
     "authors": [
