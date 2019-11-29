@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="hu">
+	<head>
+        <meta http-equiv="Content-Type" content="text/html;" charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, shrink-to-fit=no, user-scalable=no" />
+
+
+        {% for stylesheet in app.frame.getStylesheets() %}
+            <link type="text/css" href="{{ stylesheet }}" rel="stylesheet" />
+        {% endfor %}
+
+        <title>{{ app.frame.getTitle() }}</title>
+	</head>
+    <body>
+    {% include 'basic/menu.twig'  with {'menu': app.menu} %}
+        <div class="container">
+            {% include app.content_template_name %}
+        </div>
+        {# Footer #}
+        {% include 'basic/footer.twig' %}
+    </body>
+</html>

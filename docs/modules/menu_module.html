@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="hu">
+  <head>
+    <meta charset="utf-8" />
+    <title>MenuModule &#8212; Ilx 0.1.0 dokumentáció</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Tárgymutató" href="../genindex.html" />
+    <link rel="search" title="Keresés" href="../search.html" />
+    <link rel="next" title="Saját modul fejlesztése" href="custom_module.html" />
+    <link rel="prev" title="ResourceModule" href="resource_module.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigáció</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="Általános tárgymutató"
+             accesskey="I">nyitóoldal</a></li>
+        <li class="right" >
+          <a href="custom_module.html" title="Saját modul fejlesztése"
+             accesskey="N">következő</a> |</li>
+        <li class="right" >
+          <a href="resource_module.html" title="ResourceModule"
+             accesskey="P">előző</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Ilx 0.1.0 dokumentáció</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../modules.html" accesskey="U">Modulok</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="menumodule">
+<h1>MenuModule<a class="headerlink" href="#menumodule" title="Hivatkozás erre a fejezetcímre">¶</a></h1>
+<p>A Menu modul feladata, hogy egy könnyen használható menü menedzsment interfészt biztosítson.</p>
+<p>A modul működése dinamikus, ami annyit jelent, hogy a  menü struktúra egy alapváltozata van a modules.json-be, ami a
+telepítés során bekerül az adatbázisba. Ettől kezdve az szerkeszthetővé válik, támogatja a gyakori változtatásokat.</p>
+<p>A menü struktúrát egy fában tárolja, aminek gyökere üres. Az első szinten a fő menüpontok vannak, alatta pedig tetszőleges
+szintig az almenü pontok.</p>
+<div class="admonition note">
+<p class="admonition-title">Megjegyzés</p>
+<p>A hierarchia szintek a használt dizájntól függően változhatnak.</p>
+</div>
+<div class="section" id="fuggosegek">
+<h2>Függőségek<a class="headerlink" href="#fuggosegek" title="Hivatkozás erre a fejezetcímre">¶</a></h2>
+<p>Itt azoknak a moduloknak a listáját találod, amelyek szükségesek a MenuModule működéséhez:</p>
+<ul class="simple">
+<li><p>TwigModule <em>(kötelező)</em></p></li>
+<li><p>DatabaseModule <em>(kötelező)</em></p></li>
+</ul>
+</div>
+<div class="section" id="importalas">
+<h2>Importálás<a class="headerlink" href="#importalas" title="Hivatkozás erre a fejezetcímre">¶</a></h2>
+<p>A modules.json-höz egyszerűen hozzá kell adni a következő bejegyzést:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;Menu&quot;</span><span class="p">:</span> <span class="p">[]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="parameterek">
+<h2>Paraméterek<a class="headerlink" href="#parameterek" title="Hivatkozás erre a fejezetcímre">¶</a></h2>
+<p>Két paramétert lehet beállítani a Menu modulnak:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>structure: A kezdeti menü struktúra leírója. Minden egyes bejegyzésébe 3 értéket kell megadni: name, title, children.</dt><dd><ul>
+<li><p>name: Egyedi név ami alapján hivatkozni lehet rá</p></li>
+<li><p>title: A megjeleníteni kívánt menü cím</p></li>
+<li><p>children: Ha vannak almenük, akkor ezen belül kell elhelyezni. <strong>Ha nincsenek almenüpontok akkor is szerepelnie kell!</strong></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>table: Tábla neve ami a menü-t tartalmazza</p></li>
+</ul>
+<p>Példa a paraméterek egy beállítására:
+.. code-block:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;Menu&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="c1"># Menü struktúra leírója</span>
+    <span class="s2">&quot;structure&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;home&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Kezdőlap&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;route&quot;</span><span class="p">:</span> <span class="s2">&quot;renderHome&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;children&quot;</span><span class="p">:</span> <span class="p">[]</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;contacts&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;route&quot;</span><span class="p">:</span> <span class="s2">&quot;renderContacts&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Kapcsolat&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;children&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;addresses&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Címek&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;route&quot;</span><span class="p">:</span> <span class="s2">&quot;renderAddresses&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;children&quot;</span><span class="p">:</span> <span class="p">[]</span>
+                <span class="p">},</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;table&quot;</span><span class="p">:</span> <span class="s2">&quot;menu&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="hasznalata">
+<h2>Használata<a class="headerlink" href="#hasznalata" title="Hivatkozás erre a fejezetcímre">¶</a></h2>
+<p>modules.json paraméterek beállítása után</p>
+<p>A menüt a twig fájlokban az app.menu alatt lehet elérni. Példa egy menü generálásra:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">ul</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;main-menu&quot;</span><span class="o">&gt;</span>
+    <span class="p">{</span><span class="o">%</span> <span class="n">include</span> <span class="s2">&quot;includes/menu-links.html&quot;</span> <span class="k">with</span> <span class="p">{</span><span class="s1">&#39;subMenus&#39;</span><span class="p">:</span><span class="n">app</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">subMenus</span><span class="p">()}</span> <span class="n">only</span> <span class="o">%</span><span class="p">}</span>
+<span class="o">&lt;/</span><span class="n">ul</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;!--includes/menu-links.html--&gt;
+{% for subMenu in subMenus %}
+    &lt;li&gt;
+        &lt;a href=&quot;{{ url_generate(subMenu.route) }}&quot;&gt;{{ subMenu.title }}&lt;/a&gt;
+        {% if subMenu.hasSubMenus %}
+            &lt;ul&gt;
+                {% include &quot;includes/menu-links.html&quot; with {&#39;subMenus&#39;: subMenu.subMenus()} %}
+            &lt;/ul&gt;
+        {% endif %}
+    &lt;/li&gt;
+{% endfor %}
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">MenuModule</a><ul>
+<li><a class="reference internal" href="#fuggosegek">Függőségek</a></li>
+<li><a class="reference internal" href="#importalas">Importálás</a></li>
+<li><a class="reference internal" href="#parameterek">Paraméterek</a></li>
+<li><a class="reference internal" href="#hasznalata">Használata</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Előző témakör</h4>
+  <p class="topless"><a href="resource_module.html"
+                        title="előző fejezet">ResourceModule</a></p>
+  <h4>Következő témakör</h4>
+  <p class="topless"><a href="custom_module.html"
+                        title="következő fejezet">Saját modul fejlesztése</a></p>
+  <div role="note" aria-label="source link">
+    <h3>Ez az Oldal</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/modules/menu_module.rst.txt"
+            rel="nofollow">Forrás megtekintése</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Gyorskeresés</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Ok" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigáció</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="Általános tárgymutató"
+             >nyitóoldal</a></li>
+        <li class="right" >
+          <a href="custom_module.html" title="Saját modul fejlesztése"
+             >következő</a> |</li>
+        <li class="right" >
+          <a href="resource_module.html" title="ResourceModule"
+             >előző</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Ilx 0.1.0 dokumentáció</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../modules.html" >Modulok</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Attila Nagy.
+      <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1 használatával készült.
+    </div>
+  </body>
+</html>

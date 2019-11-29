@@ -1,0 +1,240 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="hu">
+  <head>
+    <meta charset="utf-8" />
+    <title>Ilx alapok &#8212; Ilx 0.1.0 dokumentáció</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="index" title="Tárgymutató" href="genindex.html" />
+    <link rel="search" title="Keresés" href="search.html" />
+    <link rel="next" title="Parancsok" href="commands.html" />
+    <link rel="prev" title="Üdvözlünk az Ilx dokumentációs oldalon!" href="index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigáció</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="Általános tárgymutató"
+             accesskey="I">nyitóoldal</a></li>
+        <li class="right" >
+          <a href="commands.html" title="Parancsok"
+             accesskey="N">következő</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Üdvözlünk az Ilx dokumentációs oldalon!"
+             accesskey="P">előző</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Ilx 0.1.0 dokumentáció</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="ilx-alapok">
+<h1>Ilx alapok<a class="headerlink" href="#ilx-alapok" title="Hivatkozás erre a fejezetcímre">¶</a></h1>
+<div class="section" id="a-kodiak-mukodese">
+<h2>A Kodiak működése<a class="headerlink" href="#a-kodiak-mukodese" title="Hivatkozás erre a fejezetcímre">¶</a></h2>
+<p>A Kodiak egy egyszerű php nyelven készült web keretrendszer, amelynek segítségével php alkalmazásokat fejleszhetünk MVC
+architektúrában. Az alábbiakban egy rövid összefoglalót adunk a Kodiak működéséről, ami szükséges az Ilx helyes
+használatához.</p>
+<p>A Kodiak egy monolitikus konfigurációban gondolkozik, amely tartalmaz minden szükséges beállítást az alkalmazás
+futtatásához. A Kodiak ezt a konfigurációt felhasználva képes futtatni az alkalmazásunkat. A konfigurációs fájl 5 fő
+elemet tartalmaz:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Környezeti változók (environment):</strong> Környezeti változónak minősülnek azok a kulcs-érték párok, amelyekre az alkalmazás tetszőleges pontján szükség lehet. Ilyen lehet az időzóna vagy hogy milyen módban futtatjuk az alkalmazást (development, product)</p></li>
+<li><p><strong>Hook-ok (hooks):</strong> Olyan elemek, amelyeknek minden a webszerver felé indított kérés kezelése előtt le kell futtatni. Tipikusan jó példa erre a session inicializálása vagy annak vizsgálata, hogy a felhasználó jogosult-e egy adott weboldal megnyitására.</p></li>
+<li><p><strong>Service-ek (services):</strong> Olyan szolgáltatások, amelyekre nincsen szükség minden kérés kezelésénél, de elérésük alkalmazás tetszőleges pontján fontosak. Például ilyen szolgáltatás lehet az email-ek küldése, loggolás, weboldal tartalmának renderelése.</p></li>
+<li><p><strong>Route-k (routes):</strong> Az alkalmazásból elérhető útvonalak listája, amely minden útvonal esetén tartalmazza, hogy melyik Controller melyik metódusa kezeli az adott útvonalat.</p></li>
+<li><p><strong>Router (router):</strong> Tartalmazza, hogy milyen módszer alapján történjen az útvonalak leképezése. Ezzel nem kell foglalkozunk.</p></li>
+</ul>
+</div></blockquote>
+<p>Ha ezeket az elemeket sikeresen beállítottuk a Kodiak minden egyes HTTP kérés esetén a konfigurációt értelmezve fogja
+lekezelni az adott kérést.</p>
+<a class="reference internal image-reference" href="_images/kodiak.svg"><div align="center" class="align-center"><img alt="_images/kodiak.svg" height="300px" src="_images/kodiak.svg" /></div>
+</a>
+<dl class="simple">
+<dt>A kérés kezelésének a lépései sorrendhelyesen a következők:</dt><dd><ol class="arabic simple">
+<li><p>A Kodiak betölti az alkalmazás konfigurációt, és beregisztrálja magának a konfigurációban megadott elemeket</p></li>
+<li><p>Futtatja a definiált Hook-okat a megadott sorrendben. (Például egy Hook létrehozza a php session-t, egy másik ellenőrzi a jogosultságokat, stb.)</p></li>
+<li><p>Ha a Hook-ok sikeresen lefutottak és valamilyen ok (pl.: jogosultság hiánya) miatt nem kellett leállítani a kérés kezelését a konfigurációban megadott Router segítségével leképezi az Url-t egy Controller - metódus párosra</p></li>
+<li><p>Meghívja a Router által kiderített Controller megfelelő metódusát, ahol már a fejlesztő által definiált üzleti logika található.</p></li>
+<li><p>A metódusokban a fejlesztő hozzáfér mind a környezetiváltozókhoz és a Service-khez is.</p></li>
+</ol>
+</dd>
+</dl>
+<p>Példa környezeti változók hozzáféréséhez:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$timezone = Application::getEnv(&quot;timezone&quot;)
+</pre></div>
+</div>
+<p>Példa service hozzáférésre (itt most egy logger szolgáltatásra látsz példát)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$logger = Application::get(&quot;logger&quot;)
+</pre></div>
+</div>
+</div>
+<div class="section" id="az-ilx-mukodese">
+<h2>Az Ilx működése<a class="headerlink" href="#az-ilx-mukodese" title="Hivatkozás erre a fejezetcímre">¶</a></h2>
+<p>Az Ilx a Kodiak-re épülő rendszer, amely célja kettős. Egyrészt eltünteti a Kodiak konfiguráció összeállításának
+komplexitását. Másrészt felgyorsítja a fejlesztési folyamatot, úgy hogy előre definiált dobozok segítségével a
+fejlesztőnek már csak a tényleges üzleti logika megírására kell koncentrálnia.</p>
+<p>Ezek alapján az Ilx a fejlesztő számára két fő szolgáltatást biztosít:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Definiál előre elkészített dobozokat, úgynevezett modulokat, amik egy logikailag jól körülhatárolt funkcionalitást valósítanak meg.</p></li>
+<li><p>Egyszerűen használható szkripteket biztosít a fejlesztők számára, amik a szükséges modulokat egy Kodiak alkalmazásba szervezik.</p></li>
+</ol>
+</div></blockquote>
+<a class="reference internal image-reference" href="_images/ilx.svg"><div align="center" class="align-center"><img alt="_images/ilx.svg" height="300px" src="_images/ilx.svg" /></div>
+</a>
+<p>Az elérhető parancsok listáját a <a class="reference internal" href="commands.html#commands-label"><span class="std std-ref">Parancsok</span></a> oldalon találod, míg az Ilx által biztosított modulokról a
+<a class="reference internal" href="modules.html#modules-label"><span class="std std-ref">Modulok</span></a>-ban találsz részletes leírást.</p>
+</div>
+<div class="section" id="elso-alkalmazasom">
+<h2>Első alkalmazásom<a class="headerlink" href="#elso-alkalmazasom" title="Hivatkozás erre a fejezetcímre">¶</a></h2>
+<p>Első lépésben le kell tölteni az Ilx-et composer segítségével:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">composer</span> <span class="n">require</span> <span class="n">ilx</span><span class="o">-</span><span class="n">hu</span><span class="o">/</span><span class="n">ilx</span><span class="o">-</span><span class="n">framework</span>
+</pre></div>
+</div>
+<p>Ha ez megtörtént a vendor/bin könyvtárban már ott lesz az ilx.php, ami az Ilx menedzsment szkriptjeit tartalmazza.
+A használható parancsok listáját a <a class="reference internal" href="commands.html#commands-label"><span class="std std-ref">Parancsok</span></a> oldalon találod. Ezek közül egy új alkalmazás készítéséhez a
+quick-start parancsot lehet használni:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">php</span> <span class="n">vendor</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">ilx</span><span class="o">.</span><span class="n">php</span> <span class="n">quick</span><span class="o">-</span><span class="n">start</span>
+</pre></div>
+</div>
+<p>A parancs futtatása során végighalad azokon a fő elemeken ami szükséges lehet az alkalmazás működéséhez és a megadott
+inputok alapján készíti el a modules.json-t. (A modules.json az aktuális working directoryban jön létre.)</p>
+<p>A modules.json tartalmazza az összes információt, ami leírja az alkalmazás felépítését. Van-e adatbázis kapcsolat, ha igen
+akkor hova kell kapcsolódni, kell-e authentikálni a felhasználókat, ha igen milyen módszerrel. Van-e levelező szerver amit
+használni kell, ha igen milyen email sablonok vannak…stb.</p>
+<p>Ha a „Generating project templates” kérdésre yes-szel válaszoltunk a modules.json mellett létrehoz egy src mappát, amiben:</p>
+<ul class="simple">
+<li><p>három könyvtár található: Controller, Model, View,</p></li>
+<li><p>és [Projectname]Module.php nevű fájl</p></li>
+</ul>
+<p>A három könyvtárban kell helyezni az alkalmazás specifikus részeit, míg a [Projectname]Module.php fájl azt határozza meg, hogy
+a három könyvtár tartalmát hogyan kell beilleszteni a Kodiak alkalmazásba. A [Projectname]Module.php beállításáról a
+<a class="reference internal" href="modules/custom_module.html#custom-module-label"><span class="std std-ref">Saját modul fejlesztése</span></a> oldalon olvashatsz.</p>
+<p>A modules.json-t felhasználva lehet telepíteni az Ilx rendszert az <a class="reference internal" href="commands.html#install-cmd-label"><span class="std std-ref">install</span></a> paranccsal:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">php</span> <span class="n">vendor</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">ilx</span><span class="o">.</span><span class="n">php</span> <span class="n">install</span> <span class="n">modules</span><span class="o">.</span><span class="n">json</span>
+</pre></div>
+</div>
+<p>A telepítés után létrejön:</p>
+<ul class="simple">
+<li><p>egy config könyvtár, amiben a conf.json tartalmazza a Kodiak konfigurációt. Ezt kézzel ne szerkesd, mert az itt végrehajtott változtatások felülíródnak a következő frissítésnél</p></li>
+<li><p>egy view könyvtár, ami a használt twig fájlokat tartalmazza.</p></li>
+<li><p>egy web könyvtár, ami az index.php-t tartalmazza (alkalmazás belépési pontja).</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Figyelem</p>
+<p>Azok a view-k, amiket az src/View-ban definiálunk be vannak linkelve a view/[Projectname] alá (szimbolikus linkkel). Az src/View változásai emiatt automatikusan érvényre jutnak.</p>
+</div>
+<p>Az src/Controller mappában hozzunk létre egy MyController.php fájlt, aminek legyen egy metódusa, ami kiírja, hogy hello world:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">namespace</span> <span class="n">Projectname</span>\<span class="n">Controller</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">MyController</span>
+<span class="p">{</span>
+    <span class="n">public</span> <span class="n">function</span> <span class="n">hello</span><span class="p">()</span> <span class="p">{</span>
+
+        <span class="k">return</span> <span class="s2">&quot;hello world&quot;</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Hogy kívülről is hívható legyen, a [Projectname]Module.php route-jainál hozzá kell adni a metódust egy tetszőleges url-hez:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">function</span> <span class="n">routes</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="p">[</span>
+            <span class="s2">&quot;method&quot;</span>    <span class="o">=&gt;</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;url&quot;</span>       <span class="o">=&gt;</span> <span class="s2">&quot;/home&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;handler&quot;</span>   <span class="o">=&gt;</span> <span class="n">MyController</span><span class="p">::</span><span class="n">class</span><span class="o">.</span><span class="s2">&quot;::home&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">];</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Ahhoz, hogy a változtatások érvényre jussanak egy <a class="reference internal" href="commands.html#update-cmd-label"><span class="std std-ref">update</span></a> parancsot kell futtatnunk:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">php</span> <span class="n">vendor</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">ilx</span><span class="o">.</span><span class="n">php</span> <span class="n">update</span> <span class="n">modules</span><span class="o">.</span><span class="n">json</span>
+</pre></div>
+</div>
+<p>Ezután elindíthatjuk az alkalmazást a beépített php webszerverrel:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">web</span>
+<span class="n">php</span> <span class="o">-</span><span class="n">S</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">8801</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Ilx alapok</a><ul>
+<li><a class="reference internal" href="#a-kodiak-mukodese">A Kodiak működése</a></li>
+<li><a class="reference internal" href="#az-ilx-mukodese">Az Ilx működése</a></li>
+<li><a class="reference internal" href="#elso-alkalmazasom">Első alkalmazásom</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Előző témakör</h4>
+  <p class="topless"><a href="index.html"
+                        title="előző fejezet">Üdvözlünk az Ilx dokumentációs oldalon!</a></p>
+  <h4>Következő témakör</h4>
+  <p class="topless"><a href="commands.html"
+                        title="következő fejezet">Parancsok</a></p>
+  <div role="note" aria-label="source link">
+    <h3>Ez az Oldal</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/basics.rst.txt"
+            rel="nofollow">Forrás megtekintése</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Gyorskeresés</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Ok" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigáció</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="Általános tárgymutató"
+             >nyitóoldal</a></li>
+        <li class="right" >
+          <a href="commands.html" title="Parancsok"
+             >következő</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Üdvözlünk az Ilx dokumentációs oldalon!"
+             >előző</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Ilx 0.1.0 dokumentáció</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Attila Nagy.
+      <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1 használatával készült.
+    </div>
+  </body>
+</html>

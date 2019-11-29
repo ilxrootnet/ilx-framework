@@ -1,2 +1,3 @@
 # ilx-framework
-php framework
+
+Dokumentáció: https://ilx-hu.github.io/ilx-framework/

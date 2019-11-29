@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="hu">
+  <head>
+    <meta charset="utf-8" />
+    <title>Parancsok &#8212; Ilx 0.1.0 dokumentáció</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="index" title="Tárgymutató" href="genindex.html" />
+    <link rel="search" title="Keresés" href="search.html" />
+    <link rel="next" title="Modulok" href="modules.html" />
+    <link rel="prev" title="Ilx alapok" href="basics.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigáció</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="Általános tárgymutató"
+             accesskey="I">nyitóoldal</a></li>
+        <li class="right" >
+          <a href="modules.html" title="Modulok"
+             accesskey="N">következő</a> |</li>
+        <li class="right" >
+          <a href="basics.html" title="Ilx alapok"
+             accesskey="P">előző</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Ilx 0.1.0 dokumentáció</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="parancsok">
+<span id="commands-label"></span><h1>Parancsok<a class="headerlink" href="#parancsok" title="Hivatkozás erre a fejezetcímre">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="quick-start">
+<span id="quick-start-cmd-label"></span><h2>quick-start<a class="headerlink" href="#quick-start" title="Hivatkozás erre a fejezetcímre">¶</a></h2>
+<p>A parancs segítséget nyújt a modules.json leíró összeállításában. A modules.json tartalmazza a szükséges információkat
+az Ilx-Framework telepítéséhez.</p>
+<p>A parancs futtatása során végighalad azokon a fő elemeken ami szükséges lehet az alkalmazás működéséhez és a megadott
+inputok alapján készíti el a modules.json-t.</p>
+<div class="section" id="kapcsolok-es-parameterek">
+<h3>Kapcsolók és paraméterek<a class="headerlink" href="#kapcsolok-es-parameterek" title="Hivatkozás erre a fejezetcímre">¶</a></h3>
+<dl class="simple">
+<dt><strong>Kötelező paraméter:</strong></dt><dd><ul class="simple">
+<li><p>nincsen</p></li>
+</ul>
+</dd>
+<dt><strong>Opcionális paraméterek:</strong></dt><dd><ul class="simple">
+<li><p>nincsen</p></li>
+</ul>
+</dd>
+<dt><strong>Kötelező kapcsolók:</strong></dt><dd><ul class="simple">
+<li><p>nincsen</p></li>
+</ul>
+</dd>
+<dt><strong>Opcionális kapcsolók:</strong></dt><dd><ul class="simple">
+<li><p>nincsen</p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="peldak">
+<h3>Példák<a class="headerlink" href="#peldak" title="Hivatkozás erre a fejezetcímre">¶</a></h3>
+<ol class="arabic">
+<li><p>példa:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">php</span> <span class="nb">bin</span><span class="o">/</span><span class="n">ilx</span><span class="o">.</span><span class="n">php</span> <span class="n">quick</span><span class="o">-</span><span class="n">start</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="section" id="install">
+<span id="install-cmd-label"></span><h2>install<a class="headerlink" href="#install" title="Hivatkozás erre a fejezetcímre">¶</a></h2>
+<p>A parancs használatával telepíthető egy Ilx-Framework alapú alkalmazás. A parancs 1 darab kötelező inputot vár,
+ami a modules.json fájl elérési útvonala.</p>
+<p>Az alkalmazás az aktuális working directoryhoz képest fogja elhelyezni a fájlokat. Célszerű emiatt ugyanabból a
+könyvtárból futtatni a parancsot, ahol a modules.json leírónk is van.</p>
+<div class="section" id="id1">
+<h3>Kapcsolók és paraméterek<a class="headerlink" href="#id1" title="Hivatkozás erre a fejezetcímre">¶</a></h3>
+<dl class="simple">
+<dt><strong>Kötelező paraméter:</strong></dt><dd><ul class="simple">
+<li><p><em>modules_config:</em> a modules.json fájl elérési útvonala, ami alapján frissítenénk az alkalmazást</p></li>
+</ul>
+</dd>
+<dt><strong>Opcionális paraméterek:</strong></dt><dd><ul class="simple">
+<li><p>nincsen</p></li>
+</ul>
+</dd>
+<dt><strong>Kötelező kapcsolók:</strong></dt><dd><ul class="simple">
+<li><p>nincsen</p></li>
+</ul>
+</dd>
+<dt><strong>Opcionális kapcsolók:</strong></dt><dd><ul class="simple">
+<li><p>nincsen</p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="id2">
+<h3>Példák<a class="headerlink" href="#id2" title="Hivatkozás erre a fejezetcímre">¶</a></h3>
+<ol class="arabic">
+<li><p>példa:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">php</span> <span class="nb">bin</span><span class="o">/</span><span class="n">ilx</span><span class="o">.</span><span class="n">php</span> <span class="n">install</span> <span class="n">modules</span><span class="o">.</span><span class="n">json</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="section" id="update">
+<span id="update-cmd-label"></span><h2>update<a class="headerlink" href="#update" title="Hivatkozás erre a fejezetcímre">¶</a></h2>
+<p>A paraméterben megadott modules.json alapján frissíti az alkalmazást. Az update futattásánál alapvetően csak a
+Kodi konfiguráció frissül. Ha szeretnénk valamilyen resource-t is frissíteni vagy modul inicializáló szkripteket
+futtatni, akkor mellékelni kell a parancs mellé a megfelelő kapcsolót.</p>
+<div class="section" id="id3">
+<h3>Kapcsolók és paraméterek<a class="headerlink" href="#id3" title="Hivatkozás erre a fejezetcímre">¶</a></h3>
+<dl class="simple">
+<dt><strong>Kötelező paraméter:</strong></dt><dd><ul class="simple">
+<li><p><em>modules_config:</em> a modules.json fájl elérési útvonala, ami alapján frissítenénk az alkalmazást</p></li>
+</ul>
+</dd>
+<dt><strong>Opcionális paraméterek:</strong></dt><dd><ul class="simple">
+<li><p>nincsen</p></li>
+</ul>
+</dd>
+<dt><strong>Kötelező kapcsolók:</strong></dt><dd><ul class="simple">
+<li><p>nincsen</p></li>
+</ul>
+</dd>
+<dt><strong>Opcionális kapcsolók:</strong></dt><dd><ul class="simple">
+<li><p><em>-r (–run_scripts):</em> Végrehajtja a modulok initscriptjeit is.</p></li>
+<li><p><em>-t (–include_templates):</em> Frissíti/Átmásolja a resource-okat is.</p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="id4">
+<h3>Példák<a class="headerlink" href="#id4" title="Hivatkozás erre a fejezetcímre">¶</a></h3>
+<p>Példa egyszerű futtatásra:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">php</span> <span class="nb">bin</span><span class="o">/</span><span class="n">ilx</span><span class="o">.</span><span class="n">php</span> <span class="n">update</span> <span class="n">modules</span><span class="o">.</span><span class="n">json</span>
+</pre></div>
+</div>
+<p>Példa futtatásra init szkriptekkel:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">php</span> <span class="nb">bin</span><span class="o">/</span><span class="n">ilx</span><span class="o">.</span><span class="n">php</span> <span class="n">update</span> <span class="n">modules</span><span class="o">.</span><span class="n">json</span> <span class="o">-</span><span class="n">r</span>
+</pre></div>
+</div>
+<p>Példa futtatásra init szkriptekkel és resource másolással:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">php</span> <span class="nb">bin</span><span class="o">/</span><span class="n">ilx</span><span class="o">.</span><span class="n">php</span> <span class="n">update</span> <span class="n">modules</span><span class="o">.</span><span class="n">json</span> <span class="o">-</span><span class="n">r</span> <span class="o">-</span><span class="n">t</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Parancsok</a><ul>
+<li><a class="reference internal" href="#quick-start">quick-start</a><ul>
+<li><a class="reference internal" href="#kapcsolok-es-parameterek">Kapcsolók és paraméterek</a></li>
+<li><a class="reference internal" href="#peldak">Példák</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#install">install</a><ul>
+<li><a class="reference internal" href="#id1">Kapcsolók és paraméterek</a></li>
+<li><a class="reference internal" href="#id2">Példák</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#update">update</a><ul>
+<li><a class="reference internal" href="#id3">Kapcsolók és paraméterek</a></li>
+<li><a class="reference internal" href="#id4">Példák</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Előző témakör</h4>
+  <p class="topless"><a href="basics.html"
+                        title="előző fejezet">Ilx alapok</a></p>
+  <h4>Következő témakör</h4>
+  <p class="topless"><a href="modules.html"
+                        title="következő fejezet">Modulok</a></p>
+  <div role="note" aria-label="source link">
+    <h3>Ez az Oldal</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/commands.rst.txt"
+            rel="nofollow">Forrás megtekintése</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Gyorskeresés</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Ok" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigáció</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="Általános tárgymutató"
+             >nyitóoldal</a></li>
+        <li class="right" >
+          <a href="modules.html" title="Modulok"
+             >következő</a> |</li>
+        <li class="right" >
+          <a href="basics.html" title="Ilx alapok"
+             >előző</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Ilx 0.1.0 dokumentáció</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Attila Nagy.
+      <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1 használatával készült.
+    </div>
+  </body>
+</html>

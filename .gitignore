@@ -1,0 +1,10 @@
+vendor/
+.idea
+composer.lock
+composer
+config/*
+web/*
+view/*
+docsrc/build
+modules.json
+src/Test/

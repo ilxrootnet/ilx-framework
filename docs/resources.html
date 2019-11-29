@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="hu">
+  <head>
+    <meta charset="utf-8" />
+    <title>Resource-ok kezelése &#8212; Ilx 0.1.0 dokumentáció</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="index" title="Tárgymutató" href="genindex.html" />
+    <link rel="search" title="Keresés" href="search.html" />
+    <link rel="next" title="Resource-ok kezelése a deployment során" href="deployment.html" />
+    <link rel="prev" title="Saját modul fejlesztése" href="modules/custom_module.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigáció</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="Általános tárgymutató"
+             accesskey="I">nyitóoldal</a></li>
+        <li class="right" >
+          <a href="deployment.html" title="Resource-ok kezelése a deployment során"
+             accesskey="N">következő</a> |</li>
+        <li class="right" >
+          <a href="modules/custom_module.html" title="Saját modul fejlesztése"
+             accesskey="P">előző</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Ilx 0.1.0 dokumentáció</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="resource-ok-kezelese">
+<h1>Resource-ok kezelése<a class="headerlink" href="#resource-ok-kezelese" title="Hivatkozás erre a fejezetcímre">¶</a></h1>
+<p>Először is fontos tisztázni, hogy mit is értünk resource alatt. Az Ilx-Framework-ben minden olyan fájlt, aminek a
+kiterjesztése nem .php resource-nak (erőforrásnak) tekintünk. Például:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>css fájlok</p></li>
+<li><p>js fájlok</p></li>
+<li><p>twig fájlok</p></li>
+<li><p>.jpg, .jpeg, .gif, .png állományok</p></li>
+<li><p>stb.</p></li>
+</ul>
+</div></blockquote>
+<dl class="simple">
+<dt>A resource-ok két forrásból érkezhetnek:</dt><dd><ol class="arabic simple">
+<li><p>egy projektben használt modulból</p></li>
+<li><p>a projekt saját moduljából</p></li>
+</ol>
+</dd>
+</dl>
+<p>A második mód kvázi nyilvánvaló, hiszen a projektjeink nagy részénél előfordul, hogy szükséges saját twig sablonokat
+készíteni, egyedi design biztosítani, stb.</p>
+<p>Az első módra pedig jó példa, az authentikációs modul, ami a regisztrációhoz, bejelentkezéshez vagy az elfelejtett
+jelszóhoz egy-egy sablon .twig fájlt biztosít.</p>
+<p>Ezeknek a fájloknak megfelelő menedzselése nem egyszerű feladat, hiszen egy projekt életciklusa során gyakran előfordul,
+hogy módosítani szeretnénk egy használt modul sablonjait, ami sok kérdést vethet fel:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Mi történik akkor, ha frissíteni szeretnék egy modult? Ilyenkor elvesznek a változtatásaim?</p></li>
+<li><p>Mi történik akkor, ha a projektemet telepíteni szeretném egy új környezetben? A más modulokon végzett változtatások hogyan jelennek meg majd meg?</p></li>
+</ul>
+</div></blockquote>
+<div class="section" id="resource-ok-kezelese-a-fejlesztes-kozben">
+<h2>Resource-ok kezelése a fejlesztés közben<a class="headerlink" href="#resource-ok-kezelese-a-fejlesztes-kozben" title="Hivatkozás erre a fejezetcímre">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p>erőforrások linkelése (hardlink) igény szerint</p></li>
+<li><dl class="simple">
+<dt>legyen soft_copy és hard_copy:</dt><dd><ul>
+<li><p>soft copy esetén csak egy linket állítunk be a forrásfájlra: ez akkor frankó, ha nem akarjuk folyton updatelni aprojektet hogy megjelennek a módosított forrásfájlok</p></li>
+<li><p>hard copy esetén ténylegesen átmásol</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>még azt kell megoldani, hogy az egyes template másolások ne mindig történjenek meg</p></li>
+<li><p>TODO: megnézni, hogy lehet e könyvtárat linkelni</p></li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Resource-ok kezelése</a><ul>
+<li><a class="reference internal" href="#resource-ok-kezelese-a-fejlesztes-kozben">Resource-ok kezelése a fejlesztés közben</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Előző témakör</h4>
+  <p class="topless"><a href="modules/custom_module.html"
+                        title="előző fejezet">Saját modul fejlesztése</a></p>
+  <h4>Következő témakör</h4>
+  <p class="topless"><a href="deployment.html"
+                        title="következő fejezet">Resource-ok kezelése a deployment során</a></p>
+  <div role="note" aria-label="source link">
+    <h3>Ez az Oldal</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/resources.rst.txt"
+            rel="nofollow">Forrás megtekintése</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Gyorskeresés</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Ok" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigáció</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="Általános tárgymutató"
+             >nyitóoldal</a></li>
+        <li class="right" >
+          <a href="deployment.html" title="Resource-ok kezelése a deployment során"
+             >következő</a> |</li>
+        <li class="right" >
+          <a href="modules/custom_module.html" title="Saját modul fejlesztése"
+             >előző</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Ilx 0.1.0 dokumentáció</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Attila Nagy.
+      <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1 használatával készült.
+    </div>
+  </body>
+</html>

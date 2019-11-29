@@ -1,0 +1,49 @@
+<?php
+
+namespace {{namespace}};
+
+
+use Ilx\Module\IlxModule;
+use Ilx\Module\ModuleManager;
+
+
+class {{project_name}}Module extends IlxModule
+{
+
+    function defaultParameters()
+    {
+        return [
+
+        ];
+    }
+
+    function environmentalVariables()
+    {
+        return [];
+    }
+
+    function routes()
+    {
+        return [];
+    }
+
+    function serviceProviders()
+    {
+        return [];
+    }
+
+    function hooks()
+    {
+        return [];
+    }
+
+    function bootstrap(ModuleManager $moduleManager)
+    {
+
+    }
+
+    function initScript($include_templates)
+    {
+
+    }
+}
