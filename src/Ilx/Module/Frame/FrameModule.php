@@ -13,7 +13,7 @@ use Ilx\Module\Twig\TwigModule;
 
 class FrameModule extends IlxModule
 {
-    const COPY_ON_INSTALL = "copy_on_install";
+    const OVERWRITE = "overwrite";
     const FRAME_NAMES = "frame_names";
     const DEFAULT_FRAME = "default_frame";
 
@@ -24,8 +24,7 @@ class FrameModule extends IlxModule
     function defaultParameters()
     {
         return [
-            # kell-e telepítés esetén másolni a mintát
-            FrameModule::COPY_ON_INSTALL => false,
+            FrameModule::OVERWRITE => false,
             FrameModule::FRAME_NAMES => ["basic"],
             FrameModule::DEFAULT_FRAME => "basic",
 
@@ -76,31 +75,27 @@ class FrameModule extends IlxModule
             ]
         ]);
 
-        # csak akkor csinálunk bármit is, ha a copy_on_install be van billentve.
-        if($this->parameters[FrameModule::COPY_ON_INSTALL]) {
-            foreach ($this->parameters[FrameModule::FRAME_NAMES] as $frame_name) {
-                # kiválasztjuk a megelelő template útvonalt
-                $template_path = dirname(__FILE__).DIRECTORY_SEPARATOR."Templates".DIRECTORY_SEPARATOR.$frame_name;
-                # hozzáadjuk, mint template útvonal. Ezeket mindig másoljuk és nem készül róluk szimbolikus link
-                $twig_module->addTemplatePath($template_path, $frame_name, false);
-                # a frame-eket még regisztrálni kell, mint új frame.
-                $twig_module->setFrame($frame_name, DIRECTORY_SEPARATOR.$frame_name.DIRECTORY_SEPARATOR."frame.twig");
-                print("\t- Added '$frame_name' as frame template\n");
-            }
 
-            # default frame beállítása
-            $default = $this->parameters[FrameModule::DEFAULT_FRAME];
-            $twig_module->setFrame("default", DIRECTORY_SEPARATOR.$default.DIRECTORY_SEPARATOR."frame.twig");
-            print("\t- '$default' has been set as default frame\n");
+        foreach ($this->parameters[FrameModule::FRAME_NAMES] as $frame_name) {
 
 
-            print("\tRegistering stylesheets...\n");
 
-        }
-        else {
-            print("\t Bootstraping has been skipped, because copy_on_install parameter is false.\n");
+            # kiválasztjuk a megfelelő template útvonalt
+            $template_path = dirname(__FILE__).DIRECTORY_SEPARATOR."Templates".DIRECTORY_SEPARATOR.$frame_name;
+            # hozzáadjuk, mint template útvonal. Ezeket mindig másoljuk és nem készül róluk szimbolikus link
+            $twig_module->addTemplatePath($template_path, $frame_name, false);
+            # a frame-eket még regisztrálni kell, mint új frame.
+            $twig_module->setFrame($frame_name, DIRECTORY_SEPARATOR.$frame_name.DIRECTORY_SEPARATOR."frame.twig");
+            print("\t- Added '$frame_name' as frame template\n");
         }
 
+        # default frame beállítása
+        $default = $this->parameters[FrameModule::DEFAULT_FRAME];
+        $twig_module->setFrame("default", DIRECTORY_SEPARATOR.$default.DIRECTORY_SEPARATOR."frame.twig");
+        print("\t- '$default' has been set as default frame\n");
+
+
+        print("\tRegistering stylesheets...\n");
 
     }
 

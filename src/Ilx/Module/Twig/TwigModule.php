@@ -37,13 +37,14 @@ class TwigModule extends IlxModule
      * @param string $module_name Név, ami alatt hivatkozni lehet majd a twig fájlokra.
      * @param bool $to_link Ha igaz, akkor egy szimbolikus link lesz az alkalmazás buildben, nem másolja át a fájlokat.
      */
-    function addTemplatePath($template_path, $module_name, $to_link) {
+    function addTemplatePath($template_path, $module_name, $to_link, $overwrite) {
         /** @var ResourceModule $resource_module */
         $resource_module = ModuleManager::get("Resource");
         $resource_module->addViewPath(
             $template_path,
             $module_name,
-            ($to_link ? ResourcePath::SOFT_COPY : ResourcePath::HARD_COPY)
+            ($to_link ? ResourcePath::SOFT_COPY : ResourcePath::HARD_COPY),
+            $overwrite
         );
 
     }

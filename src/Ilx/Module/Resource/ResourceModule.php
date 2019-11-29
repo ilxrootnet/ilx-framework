@@ -4,6 +4,7 @@
 namespace Ilx\Module\Resource;
 
 
+use http\Exception\InvalidArgumentException;
 use Ilx\Ilx;
 use Ilx\Module\IlxModule;
 use Ilx\Module\ModuleManager;
@@ -27,35 +28,26 @@ class ResourceModule extends IlxModule
     ];
 
 
-    function addViewPath($path, $module_name, $copy_type) {
-        $this->resources["views"][] = new ResourcePath($path, $module_name, $copy_type);
+    function addViewPath($path, $module_name, $copy_type, $overwrite) {
+        $this->resources["views"][] = new ResourcePath($path, $module_name, $copy_type, $overwrite);
     }
 
-    function addCssPath($path, $module_name, $copy_type) {
-        $this->resources["css"][] = new ResourcePath($path, $module_name, $copy_type);
+    function addCssPath($path, $module_name, $copy_type, $overwrite) {
+        $this->resources["css"][] = new ResourcePath($path, $module_name, $copy_type, $overwrite);
     }
 
-    function addJsPath($path, $module_name, $copy_type) {
-        $this->resources["js"][] = new ResourcePath($path, $module_name, $copy_type);
+    function addJsPath($path, $module_name, $copy_type, $overwrite) {
+        $this->resources["js"][] = new ResourcePath($path, $module_name, $copy_type, $overwrite);
     }
 
-    function addImagesPath($path, $module_name, $copy_type) {
-        $this->resources["images"][] = new ResourcePath($path, $module_name, $copy_type);
+    function addImagesPath($path, $module_name, $copy_type, $overwrite) {
+        $this->resources["images"][] = new ResourcePath($path, $module_name, $copy_type, $overwrite);
     }
 
 
     function defaultParameters()
     {
-        return [
-            "production" => [
-                "web_path"  => Ilx::webPath(),
-                "views_path"=> Ilx::viewPath(),
-            ],
-            "development" => [
-                "web_path"  => Ilx::webPath(),
-                "views_path"=> Ilx::viewPath(),
-            ]
-        ];
+        return [];
     }
 
     function environmentalVariables()
@@ -125,8 +117,14 @@ class ResourceModule extends IlxModule
             } else {
                 $module_dst = $dst.DIRECTORY_SEPARATOR.$resource->getModuleName();
             }
-            print("\t\tCopying (type=".$resource->getCopyType().") from ".$resource->getPath()."\n");
-            self::recursive_copy($resource->getPath(), $module_dst, $resource->getCopyType());
+
+            if(!file_exists($module_dst) || $resource->isOverwrite()) {
+                print("\t\tCopying (type=".$resource->getCopyType().") from ".$resource->getPath()."\n");
+                self::recursive_copy($resource->getPath(), $module_dst, $resource->getCopyType());
+            }
+            else {
+                print("\t\tSkipped existing path: ".$resource->getPath()."\n");
+            }
         }
     }
 

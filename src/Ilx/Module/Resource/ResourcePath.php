@@ -25,16 +25,23 @@ class ResourcePath
     private $copy_type;
 
     /**
+     * @var boolean
+     */
+    private $overwrite;
+
+    /**
      * Resource constructor.
      * @param string $path
      * @param string $module_name
      * @param string $copy
+     * @param bool $overwrite
      */
-    public function __construct(string $path, ?string $module_name, string $copy)
+    public function __construct(string $path, ?string $module_name, string $copy, bool $overwrite)
     {
         $this->path = $path;
         $this->module_name = $module_name;
         $this->copy_type = $copy;
+        $this->overwrite = $overwrite;
     }
 
     /**
@@ -59,6 +66,14 @@ class ResourcePath
     public function getCopyType(): string
     {
         return $this->copy_type;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOverwrite(): bool
+    {
+        return $this->overwrite;
     }
 
 
