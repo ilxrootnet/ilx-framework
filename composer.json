@@ -27,8 +27,7 @@
         "ulrichsg/getopt-php": "3.2.*",
         "ext-json": "*",
         "ext-pdo": "*",
-        "ext-openssl": "*",
-        "ext-http": "*"
+        "ext-openssl": "*"
     },
     "bin": ["bin/ilx.php"],
     "minimum-stability": "dev",
