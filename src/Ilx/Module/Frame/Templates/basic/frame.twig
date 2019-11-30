@@ -18,5 +18,9 @@
         </div>
         {# Footer #}
         {% include 'basic/footer.twig' %}
+
+        {% for javascript in app.frame.getJavascripts() %}
+            <script src="{{ javascript }}"></script>
+        {% endfor %}
     </body>
 </html>

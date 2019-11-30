@@ -160,7 +160,7 @@ class Ilx
      */
     public static function jsPath($relative = false) {
         if($relative) {
-            return DIRECTORY_SEPARATOR."css";
+            return DIRECTORY_SEPARATOR."js";
         }
         return self::webPath().DIRECTORY_SEPARATOR."js";
     }

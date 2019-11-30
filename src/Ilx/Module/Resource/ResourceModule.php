@@ -4,11 +4,9 @@
 namespace Ilx\Module\Resource;
 
 
-use http\Exception\InvalidArgumentException;
 use Ilx\Ilx;
 use Ilx\Module\IlxModule;
 use Ilx\Module\ModuleManager;
-use Kodiak\Core\KodiConf;
 
 /**
  * Class ResourceModule

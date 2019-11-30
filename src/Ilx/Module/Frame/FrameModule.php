@@ -83,7 +83,7 @@ class FrameModule extends IlxModule
             # kiválasztjuk a megfelelő template útvonalt
             $template_path = dirname(__FILE__).DIRECTORY_SEPARATOR."Templates".DIRECTORY_SEPARATOR.$frame_name;
             # hozzáadjuk, mint template útvonal. Ezeket mindig másoljuk és nem készül róluk szimbolikus link
-            $twig_module->addTemplatePath($template_path, $frame_name, false);
+            $twig_module->addTemplatePath($template_path, $frame_name, false, false);
             # a frame-eket még regisztrálni kell, mint új frame.
             $twig_module->setFrame($frame_name, DIRECTORY_SEPARATOR.$frame_name.DIRECTORY_SEPARATOR."frame.twig");
             print("\t- Added '$frame_name' as frame template\n");
@@ -104,7 +104,7 @@ class FrameModule extends IlxModule
         // A fájlok másolását a Twig modulon keresztül a resource modul végzi, így itt nincs tennivaló.
     }
 
-    public function addStyleSheet($group_name, $stylesheet_path, $link=false) {
+    public function addStyleSheet($group_name, $stylesheet_path, $link=false, $overwrite = false) {
 
         $css_files = self::iterateOnDir($stylesheet_path, null);
         foreach ($css_files as $css_file) {
@@ -116,23 +116,33 @@ class FrameModule extends IlxModule
 
         /** @var ResourceModule $resource_module */
         $resource_module = ModuleManager::get("Resource");
-        $resource_module->addCssPath($stylesheet_path, $group_name, $link ? ResourcePath::SOFT_COPY : ResourcePath::HARD_COPY);
+        $resource_module->addCssPath($stylesheet_path,
+            $group_name,
+            $link ? ResourcePath::SOFT_COPY : ResourcePath::HARD_COPY,
+            $overwrite);
     }
 
-    public function addJavascript($group_name, $javascript_path, $link = false) {
+    public function addJavascript($group_name, $javascript_path, $link = false, $overwrite = false) {
 
         $js_files = self::iterateOnDir($javascript_path, null);
         foreach ($js_files as $js_file) {
+            if($js_file == ".DS_Store") {
+                continue;
+            }
+
             $this->parameters[FrameModule::JAVASCRIPTS][] =
                 Ilx::jsPath(true).DIRECTORY_SEPARATOR.
-                $group_name.DIRECTORY_SEPARATOR.
+                $group_name.
                 $js_file;
         }
 
 
         /** @var ResourceModule $resource_module */
         $resource_module = ModuleManager::get("Resource");
-        $resource_module->addJsPath($javascript_path, $group_name, $link ? ResourcePath::SOFT_COPY : ResourcePath::HARD_COPY);
+        $resource_module->addJsPath($javascript_path,
+            $group_name,
+            $link ? ResourcePath::SOFT_COPY : ResourcePath::HARD_COPY,
+            $overwrite);
     }
 
     private static function iterateOnDir($base, $dir_offset) {
