@@ -168,9 +168,13 @@ class Ilx
     /**
      * Kép fájlokat tartalmazó könyvtár elérési útvonala.
      *
+     * @param bool $relative
      * @return string
      */
-    public static function imagesPath() {
+    public static function imagesPath($relative = false) {
+        if($relative) {
+            return DIRECTORY_SEPARATOR."images";
+        }
         return self::webPath().DIRECTORY_SEPARATOR."images";
     }
 
