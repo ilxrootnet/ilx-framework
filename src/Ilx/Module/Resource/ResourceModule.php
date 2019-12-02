@@ -127,7 +127,15 @@ class ResourceModule extends IlxModule
     }
 
     private static function recursive_copy($src, $dst, $copy_type) {
+        if(!file_exists($src)) {
+            return;
+        }
+
         $dir = opendir($src);
+
+        if($dir == false) {
+            return;
+        }
 
         if($copy_type == ResourcePath::SOFT_COPY) {
             @symlink($src,$dst);

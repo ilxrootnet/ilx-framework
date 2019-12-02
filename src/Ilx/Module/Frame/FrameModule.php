@@ -200,6 +200,9 @@ class FrameModule extends IlxModule
     }
 
     private static function iterateOnDir($base, $dir_offset) {
+        if(!file_exists($base.DIRECTORY_SEPARATOR.$dir_offset)) {
+            return [];
+        }
         $dir = opendir($base.DIRECTORY_SEPARATOR.$dir_offset);
         $res = [];
         while(( $file = readdir($dir)) ) {
