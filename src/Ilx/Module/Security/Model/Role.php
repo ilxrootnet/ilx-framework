@@ -36,7 +36,7 @@ class Role extends SimpleRecord
      */
     public static function getTreeObject($role_id) {
 
-        $res = ConnectionManager::fetchAssoc("SELECT * FROM cp_roles WHERE role_id = :role_id",[
+        $res = ConnectionManager::fetchAssoc("SELECT * FROM roles WHERE role_id = :role_id",[
             "role_id" => $role_id
         ]);
 
@@ -46,7 +46,7 @@ class Role extends SimpleRecord
 
         $source = new NestedSetSource([
             NestedSetSource::DB         => ConnectionManager::getInstance()->getConnection()->getDatabase(),
-            NestedSetSource::TABLE_NAME => "cp_roles",
+            NestedSetSource::TABLE_NAME => "roles",
             NestedSetSource::NODE_ID    => "node_id",
             NestedSetSource::ROOT_ID    => 1,
             NestedSetSource::LEFT       => "node_lft",

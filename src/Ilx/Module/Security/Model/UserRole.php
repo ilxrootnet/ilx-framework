@@ -14,7 +14,7 @@ use PandaBase\Record\SimpleRecord;
  *
  * Felhasználó és szerepek összerendelésére szolgáló osztály.
  *
- * @package CityPortal\Model\Auth
+ * @package Ilx\Module\Security\Model
  */
 class UserRole extends SimpleRecord
 {
@@ -52,7 +52,7 @@ class UserRole extends SimpleRecord
          * 1, Lehúzzuk az alap role-okat
          */
         $user_roles = ConnectionManager::getInstanceRecords(UserRole::class, "
-            SELECT * FROM cp_user_roles
+            SELECT * FROM user_roles
             WHERE user_id = :user_id
         ", [
             "user_id" => $user_id
@@ -99,7 +99,7 @@ class UserRole extends SimpleRecord
     public static function getObject($user_id, $role_id) {
         return new UserRole(ConnectionManager::fetchAssoc("
             SELECT * 
-            FROM cp_user_roles 
+            FROM user_roles 
             WHERE user_id = :user_id AND role_id = :role_id", [
                 "user_id" => $user_id,
                 "role_id" => $role_id

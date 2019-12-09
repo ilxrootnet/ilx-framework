@@ -10,37 +10,55 @@ use Basil\Tree;
 use Ilx\Module\Database\DatabaseModule;
 use Ilx\Module\IlxModule;
 use Ilx\Module\ModuleManager;
-use Ilx\Module\Security\Model\PasswordHistory;
+use Ilx\Module\Security\Model\Auth\Remote\RemoteAuthenticationMode;
 use Ilx\Module\Security\Model\Role;
-use Ilx\Module\Security\Model\User;
 use Ilx\Module\Security\Model\UserRole;
 use Kodiak\Security\Hook\FirewallHook;
 use Kodiak\Security\Hook\PandabaseAccessManagerHook;
-use Kodiak\Security\Model\User\Role as KodiakRole;
-use Kodiak\Security\PandabaseAuthentication\PAv1Authentication;
-use Kodiak\Security\PandabaseAuthentication\PAv2Authentication;
+use Kodiak\Security\Model\Authentication\AuthenticationMode;
 use Kodiak\ServiceProvider\SecurityProvider\SecurityProvider;
 use PandaBase\Connection\ConnectionManager;
 use PandaBase\Connection\Scheme\Table;
 
+/**
+ * Class SecurityModule
+ *
+ * auth_modes:
+ * itt egy asszoc tömbben definiálhatjuk, hogy milyen auth_mode-kat lehet használni.
+ * a kulcs a mód neve, value-ban pedig egy asszoc tömb van, ami a módhoz szükséges paramétereket tartalmazza.
+ * pl.:
+ *
+ * ...
+ * "auth_remote" => [
+ *      "url" => "https://auth.myapplication.com/webservice/login"
+ *      "http_method" => "POST",
+ *      "token" => "e61e01a6a41747810001d52810e072441e061bba61e849109257d1c95ea1d8b4"
+ * ],
+ * ...
+ *
+ *
+ * ha nem akarunk paraméter átadni, akkor is tartani kell formátumot:
+ * pl:
+ * "auth_remote" => []
+ *
+ * @package Ilx\Module\Security
+ */
 class SecurityModule extends IlxModule
 {
-    const TYPE_PASSWORD = "auth_pwd";
+    const TYPE_BASIC = "auth_basic";
     const TYPE_TWO_FACTOR = "auth_2fact";
     const TYPE_JWT = "auth_jwt";
+    const TYPE_REMOTE = "auth_remote";
 
-    // TODO: A döntés az lett, hogy első körben egyszerre csak egy módon lehet authentikálni a három közül
-    // permission megadása legyen lehetséges
-    // legyen mindegyik auth típushoz külön url lista. egyedi nevekkel
-    // legyen egy auth/dialect, ami az aktuális dialektust adja vissza
 
     function defaultParameters()
     {
         return [
-            "type" => self::TYPE_PASSWORD,
-            "expiration_time" => 900,
-            "registration" => true,
-            "admin" => "admin@ilx.hu",
+            "auth_modes" => [
+                self::TYPE_BASIC => []
+            ],
+            "auth_selector" => "first",
+            "sess_exp_time" => 900,
             "permissions" => [],
             "views" => []
         ];
@@ -48,41 +66,38 @@ class SecurityModule extends IlxModule
 
     function environmentalVariables()
     {
-        return [
-            "auth_dialect" => $this->parameters["type"]
-        ];
+        return [];
     }
 
     function routes()
     {
-        // TODO: csak ahhoz a renderhez adunk route-t amihez létezik view
-        $routes = [
-
-        ];
+        $routes = [];
+        foreach ($this->parameters["auth_modes"] as $name => $params) {
+            $auth_class_name =  SecurityModule::authModeDispatcher($name);
+            /** @var AuthenticationMode $auth_mode */
+            $auth_mode = new $auth_class_name($params);
+            $routes = array_merge($routes, $auth_mode->routes());
+        }
+        return $routes;
     }
 
     function serviceProviders()
     {
-        $types = [
-            SecurityModule::TYPE_PASSWORD => [
-                "class_name" => PAv1Authentication::class,
-                "parameters" => []
-            ],
-            SecurityModule::TYPE_TWO_FACTOR => [
-                "class_name" => PAv2Authentication::class,
-                "parameters" => []
-            ]
-        ];
-
+        $auth_modes = [];
+        foreach ($this->parameters["auth_modes"] as $name => $params) {
+            $auth_modes[] = [
+                "class_name" => SecurityModule::authModeDispatcher($name),
+                "parameters" => $params
+            ];
+        }
 
         return [
             [
                 "class_name" => SecurityProvider::class,
                 "parameters" => [
-                    "expiration_time" => 900,
-                    "user_class_name" => User::class,
-                    "authentication"  => [$types[$this->parameters["type"]]],
-                    "admin_email"  => $this->parameters["admin"]
+                    "expiration_time" => $this->parameters["sess_exp_time"],
+                    "auth_selector" => $this->parameters["auth_selector"],
+                    "auth_modes"  => $auth_modes
                 ]
             ]
         ];
@@ -90,19 +105,21 @@ class SecurityModule extends IlxModule
 
     function hooks()
     {
+        $permissions = [];
+        foreach ($this->parameters["auth_modes"] as $name => $params) {
+            $auth_class_name =  SecurityModule::authModeDispatcher($name);
+            /** @var AuthenticationMode $auth_mode */
+            $auth_mode = new $auth_class_name($params);
+            $permissions = array_merge($permissions, $auth_mode->permissions());
+        }
+        // A végén hozzáfűzzük a paraméterként definiált permsissionoket
+        $permissions = array_merge($permissions, $this->parameters["permissions"]);
+
         return [
             [
                 "class_name" => FirewallHook::class,
                 "parameters" => [
-                    "permissions" => [
-                        "^\/user\/login$" => [KodiakRole::ANON_USER, KodiakRole::PENDING_USER],
-                        "^\/user\/auth\/dialect$" => [KodiakRole::ANON_USER, KodiakRole::PENDING_USER],
-                        "^\/user\/welcome" => [KodiakRole::ANON_USER],
-                        "^\/user\/requestpasswordreset$" => [KodiakRole::ANON_USER],
-                        "^\/user\/changepass$" => [KodiakRole::ANON_USER],
-                        "^\/user\/resetpassword" => [KodiakRole::ANON_USER],
-                        "^.+" => [KodiakRole::AUTH_USER]
-                    ]
+                    "permissions" => $permissions
                 ]
             ],
             [
@@ -117,37 +134,16 @@ class SecurityModule extends IlxModule
         /** @var DatabaseModule $database_module */
         $database_module = $moduleManager::get("Database");
 
-        $database_module->addTables([
-            User::class  => [
-                Table::TABLE_NAME => "cp_users",
-                Table::TABLE_ID   => "user_id",
-                Table::FIELDS     => [
-                    "user_id"               => "int(10) unsigned NOT NULL AUTO_INCREMENT",
-                    "username"              => "varchar(200) DEFAULT NULL",
-                    "email"                 => "varchar(200) NOT NULL",
-                    "name_prefix"           => "varchar(20) DEFAULT NULL",
-                    "firstname"             => "varchar(256) DEFAULT NULL",
-                    "lastname"              => "varchar(256) DEFAULT NULL",
-                    "status_id"             => "int(1) DEFAULT NULL",
-                    "password"              => "varchar(256) DEFAULT NULL",
-                    "password_expire"       => "datetime DEFAULT NULL",
-                    "mfa_secret"            => "varchar(50) DEFAULT NULL",
-                    "last_login"            => "datetime DEFAULT NULL ",
-                    "reset_token"           => "varchar(200) DEFAULT NULL",
-                    "failed_login_count"    => "int(10) NOT NULL DEFAULT '0'"
-
-                ],
-                Table::PRIMARY_KEY => ["user_id"]
-            ],
-
+        // A Role és UserRole mindig szerepel a rendszerben
+        $tables = [
             Role::class  => [
-                Table::TABLE_NAME => "cp_roles",
+                Table::TABLE_NAME => "roles",
                 Table::TABLE_ID   => "node_id",
                 Table::FIELDS     => [
-                    "node_id"               => "int(10) unsigned NOT NULL AUTO_INCREMENT",
-                    "node_lft"              => "int(10) DEFAULT NULL",
-                    "node_rgt"              => "int(10) DEFAULT NULL",
-                    "role_id"               => "int(10) unsigned NOT NULL",
+                    "node_id"               => "int(11) unsigned NOT NULL AUTO_INCREMENT",
+                    "node_lft"              => "int(11) DEFAULT NULL",
+                    "node_rgt"              => "int(11) DEFAULT NULL",
+                    "role_id"               => "int(11) unsigned NOT NULL",
                     "role_name"             => "varchar(255) DEFAULT NULL",
                     "role_desc"             => "varchar(255) DEFAULT NULL",
                 ],
@@ -155,26 +151,46 @@ class SecurityModule extends IlxModule
             ],
 
             UserRole::class  => [
-                Table::TABLE_NAME => "cp_user_roles",
+                Table::TABLE_NAME => "user_roles",
                 Table::TABLE_ID   => "user_role_id",
                 Table::FIELDS     => [
                     "user_role_id"          => "int(11) NOT NULL AUTO_INCREMENT",
-                    "user_id"               => "int(10) unsigned NOT NULL",
-                    "role_id"               => "int(10) unsigned NOT NULL",
+                    "user_id"               => "int(11) unsigned NOT NULL",
+                    "role_id"               => "int(11) unsigned NOT NULL",
                 ],
                 Table::PRIMARY_KEY => ["user_role_id"]
-            ],
-            PasswordHistory::class => [
-                Table::TABLE_NAME => "cp_user_password_history",
-                Table::TABLE_ID   => "user_id",
-                Table::FIELDS     => [
-                    "user_id"               => "int(11) DEFAULT NULL",
-                    "password"              => "varchar(255) DEFAULT NULL",
-                    "store_date"            => "datetime DEFAULT NULL",
-                ],
-                Table::PRIMARY_KEY => ["user_id"]
             ]
-        ]);
+        ];
+
+        // A meglévő user táblákat össze kell fésülni
+        $user_classes = [];
+        foreach ($this->parameters["auth_modes"] as $name => $params) {
+            $auth_class_name = SecurityModule::authModeDispatcher($name);
+            /** @var AuthenticationMode $auth_mode */
+            $auth_mode = new $auth_class_name($params);
+            $tables = array_merge($auth_mode->tables(), $tables);
+            $user_classes[] = $auth_mode->userClass();
+        }
+
+        // Össze kell gyűjteni az összes lehetséges mezőt
+        $user_fields = [];
+        foreach ($user_classes as $user_class) {
+            $user_fields = array_merge($user_fields, $tables[$user_class][Table::FIELDS]);
+        }
+        // Az univerzális user osztály legenerálása
+        $univ_user_table = [
+            Table::TABLE_NAME => "users",
+            Table::TABLE_ID   => "user_id",
+            Table::FIELDS     => $user_fields,
+            Table::PRIMARY_KEY => ["user_id"]
+        ];
+        // Felülírjuk az eddigi létező tábla definíciókat
+        foreach ($user_classes as $user_class) {
+            $tables[$user_class] = $univ_user_table;
+        }
+
+
+        $database_module->addTables($tables);
     }
 
     function initScript($include_templates)
@@ -186,13 +202,11 @@ class SecurityModule extends IlxModule
             "username"              => "sys_admin",
             "email"                 => $this->parameters["admin"],
             "firstname"             => "Gazda",
-            "lastname"              => "Rendszer",
-            "status_id"             => 1,
-            "password"              => null,
+            "lastname"              => "Rendszer"
         ];
         $prepared_statement = ConnectionManager::getInstance()->getConnection()->prepare("
-            INSERT INTO cp_users (user_id, username, email, firstname, lastname, status_id, password) 
-            VALUES (:user_id, :username, :email, :firstname, :lastname, :status_id, :password)");
+            INSERT INTO users (user_id, username, email, firstname, lastname) 
+            VALUES (:user_id, :username, :email, :firstname, :lastname)");
         foreach ($admin_user as $key => $value) {
             $prepared_statement->bindValue($key, $value);
         }
@@ -205,7 +219,7 @@ class SecurityModule extends IlxModule
         $roles = [
             "role_id"   => 99,
             "role_name" => "admin",
-            "role_desc" => "Admin/Rendsz ergazda",
+            "role_desc" => "Admin/Rendszergazda",
             "children"  => [
                 [
                     "role_id"   => 10,
@@ -221,7 +235,7 @@ class SecurityModule extends IlxModule
             ArraySource::ROOT_ID => 1
         ], $roles), new NestedSetSource([
             NestedSetSource::DB         => ConnectionManager::getInstance()->getConnection()->getDatabase(),
-            NestedSetSource::TABLE_NAME => "cp_roles",
+            NestedSetSource::TABLE_NAME => "roles",
             NestedSetSource::NODE_ID    => "node_id",
             NestedSetSource::ROOT_ID    => 1,
             NestedSetSource::LEFT       => "node_lft",
@@ -247,4 +261,12 @@ class SecurityModule extends IlxModule
     }
 
 
+    private static function authModeDispatcher($name) {
+        switch ($name) {
+            case RemoteAuthenticationMode::name():
+                return RemoteAuthenticationMode::class;
+            default:
+                throw new \InvalidArgumentException("Unknown authentication mode name: $name");
+        }
+    }
 }

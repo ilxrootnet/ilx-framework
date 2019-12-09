@@ -193,7 +193,7 @@ class QuickStartCommand extends Command
             print("Authentication type [password, two_factor, jwt; default=password]: ");
             switch ($this->readLine()) {
                 case "password":
-                    $ilx_modules["modules"]["Security"]["type"] = SecurityModule::TYPE_PASSWORD;
+                    $ilx_modules["modules"]["Security"]["type"] = SecurityModule::TYPE_BASIC;
                     break;
                 case "two_factor":
                     $ilx_modules["modules"]["Security"]["type"] = SecurityModule::TYPE_TWO_FACTOR;
@@ -203,7 +203,7 @@ class QuickStartCommand extends Command
                     break;
                 default:
                     print("Unknown auth type! Auth type is set to password");
-                    $ilx_modules["modules"]["Security"]["type"] = SecurityModule::TYPE_PASSWORD;
+                    $ilx_modules["modules"]["Security"]["type"] = SecurityModule::TYPE_BASIC;
             }
 
             print("Enabled registration [default=yes]: ");
