@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Ilx\Module\Security\Model\Auth;
+namespace Ilx\Module\Security\Model\Auth\Remote;
 
 
 use Kodiak\Security\Model\Authentication\AuthenticationInterface;

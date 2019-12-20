@@ -4,8 +4,6 @@
 namespace Ilx\Module\Security\Model\Auth\Remote;
 
 
-use Ilx\Module\Security\Model\Auth\RemoteUser;
-use Ilx\Module\Security\Model\Auth\RemoteUserAuthentication;
 use Ilx\Module\Security\SecurityModule;
 use Kodiak\Security\Model\Authentication\AuthenticationMode;
 use Kodiak\Security\Model\User\Role;
