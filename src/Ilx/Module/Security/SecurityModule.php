@@ -59,8 +59,7 @@ class SecurityModule extends IlxModule
             ],
             "auth_selector" => "first",
             "sess_exp_time" => 900,
-            "permissions" => [],
-            "views" => []
+            "permissions" => []
         ];
     }
 
