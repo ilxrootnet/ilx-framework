@@ -10,6 +10,7 @@ use Basil\Tree;
 use Ilx\Module\Database\DatabaseModule;
 use Ilx\Module\IlxModule;
 use Ilx\Module\ModuleManager;
+use Ilx\Module\Security\Controller\AuthController;
 use Ilx\Module\Security\Model\Auth\Remote\RemoteAuthenticationMode;
 use Ilx\Module\Security\Model\Role;
 use Ilx\Module\Security\Model\UserRole;
@@ -54,6 +55,7 @@ class SecurityModule extends IlxModule
     function defaultParameters()
     {
         return [
+            "admin" => null,
             "auth_modes" => [
                 self::TYPE_BASIC => []
             ],
@@ -70,7 +72,13 @@ class SecurityModule extends IlxModule
 
     function routes()
     {
-        $routes = [];
+        $routes = [
+            [
+                "method" => "POST",
+                "url" => "/auth/dialect",
+                "handler" => AuthController::class."::getAuthDialect"
+            ]
+        ];
         foreach ($this->parameters["auth_modes"] as $name => $params) {
             $auth_class_name =  SecurityModule::authModeDispatcher($name);
             /** @var AuthenticationMode $auth_mode */
@@ -194,69 +202,73 @@ class SecurityModule extends IlxModule
 
     function initScript($include_templates)
     {
+        if($this->parameters["admin"] != null) {
+            print("\tInserting admin user...\n");
+            $admin_user = [
+                "user_id"               => 1,
+                "username"              => "sys_admin",
+                "email"                 => $this->parameters["admin"],
+                "firstname"             => "Gazda",
+                "lastname"              => "Rendszer"
+            ];
+            $prepared_statement = ConnectionManager::getInstance()->getConnection()->prepare("
+                INSERT INTO users (user_id, username, email, firstname, lastname) 
+                VALUES (:user_id, :username, :email, :firstname, :lastname)");
+            foreach ($admin_user as $key => $value) {
+                $prepared_statement->bindValue($key, $value);
+            }
+            $prepared_statement->execute();
+            ConnectionManager::getInstance()->getAccessManager()->registerUser(new User(1));
+            print("\tAdmin user has been inserted.\n");
 
-        print("\tInserting admin user...\n");
-        $admin_user = [
-            "user_id"               => 1,
-            "username"              => "sys_admin",
-            "email"                 => $this->parameters["admin"],
-            "firstname"             => "Gazda",
-            "lastname"              => "Rendszer"
-        ];
-        $prepared_statement = ConnectionManager::getInstance()->getConnection()->prepare("
-            INSERT INTO users (user_id, username, email, firstname, lastname) 
-            VALUES (:user_id, :username, :email, :firstname, :lastname)");
-        foreach ($admin_user as $key => $value) {
-            $prepared_statement->bindValue($key, $value);
-        }
-        $prepared_statement->execute();
-        ConnectionManager::getInstance()->getAccessManager()->registerUser(new User(1));
-        print("\tAdmin user has been inserted.\n");
 
-
-        print("\tInserting roles...\n");
-        $roles = [
-            "role_id"   => 99,
-            "role_name" => "admin",
-            "role_desc" => "Admin/Rendszergazda",
-            "children"  => [
-                [
-                    "role_id"   => 10,
-                    "role_name" => "SuperUser",
-                    "role_desc" => "Super user",
+            print("\tInserting roles...\n");
+            $roles = [
+                "role_id"   => 99,
+                "role_name" => "admin",
+                "role_desc" => "Admin/Rendszergazda",
+                "children"  => [
+                    [
+                        "role_id"   => 10,
+                        "role_name" => "SuperUser",
+                        "role_desc" => "Super user",
+                    ]
                 ]
-            ]
 
-        ];
-        Tree::convert(new ArraySource([
-            ArraySource::NODE_ID => "role_id",
-            ArraySource::CHILDREN=> "children",
-            ArraySource::ROOT_ID => 1
-        ], $roles), new NestedSetSource([
-            NestedSetSource::DB         => ConnectionManager::getInstance()->getConnection()->getDatabase(),
-            NestedSetSource::TABLE_NAME => "roles",
-            NestedSetSource::NODE_ID    => "node_id",
-            NestedSetSource::ROOT_ID    => 1,
-            NestedSetSource::LEFT       => "node_lft",
-            NestedSetSource::RIGHT      => "node_rgt"
-        ]));
-        print("\tRoles have been inserted.\n");
+            ];
+            Tree::convert(new ArraySource([
+                ArraySource::NODE_ID => "role_id",
+                ArraySource::CHILDREN=> "children",
+                ArraySource::ROOT_ID => 1
+            ], $roles), new NestedSetSource([
+                NestedSetSource::DB         => ConnectionManager::getInstance()->getConnection()->getDatabase(),
+                NestedSetSource::TABLE_NAME => "roles",
+                NestedSetSource::NODE_ID    => "node_id",
+                NestedSetSource::ROOT_ID    => 1,
+                NestedSetSource::LEFT       => "node_lft",
+                NestedSetSource::RIGHT      => "node_rgt"
+            ]));
+            print("\tRoles have been inserted.\n");
 
 
-        print("\tAdding roles to users...\n");
-        $user_roles = [
-            [
-                "user_id"   => 1,
-                "role_id"   => 99
-            ]
-        ];
-        foreach ($user_roles as $user_role) {
-            $user_id = $user_role['user_id'];
-            $role_id = $user_role['role_id'];
-            UserRole::addUserTo($user_role["user_id"], $user_role["role_id"]);
-            print("\tAdded role: $role_id to user: $user_id\n");
+            print("\tAdding roles to users...\n");
+            $user_roles = [
+                [
+                    "user_id"   => 1,
+                    "role_id"   => 99
+                ]
+            ];
+            foreach ($user_roles as $user_role) {
+                $user_id = $user_role['user_id'];
+                $role_id = $user_role['role_id'];
+                UserRole::addUserTo($user_role["user_id"], $user_role["role_id"]);
+                print("\tAdded role: $role_id to user: $user_id\n");
+            }
+            print("\tRoles has been added to users.\n");
         }
-        print("\tRoles has been added to users.\n");
+        else {
+            print("\tMissing admin email ...\n");
+        }
     }
 
 
