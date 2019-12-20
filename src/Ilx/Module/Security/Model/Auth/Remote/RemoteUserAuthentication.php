@@ -43,6 +43,7 @@ class RemoteUserAuthentication extends AuthenticationInterface
         if($result == false) {
             return new AuthenticationTaskResult(false, "Unknown error during the remote login");
         }
+        $result = json_decode($result, true);
 
 
         // Ha sikeres volt
