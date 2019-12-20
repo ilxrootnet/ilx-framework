@@ -49,7 +49,7 @@ class RemoteAuthController
 
             if ($authResult->isSuccess()) {
                 return new JsonResponse([
-                    "success" => false,
+                    "success" => true,
                     "msg" => $authResult->getResult(),
                 ]);
             }
