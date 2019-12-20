@@ -271,6 +271,15 @@ class SecurityModule extends IlxModule
         }
     }
 
+    function addPermission($route_template, $groups) {
+        $this->parameters[$route_template] = $groups;
+    }
+
+    function addPermissions($permissions) {
+        foreach ($permissions as $route_template => $groups) {
+            $this->addPermission($route_template, $groups);
+        }
+    }
 
     private static function authModeDispatcher($name) {
         switch ($name) {
