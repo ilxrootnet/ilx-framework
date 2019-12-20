@@ -272,7 +272,7 @@ class SecurityModule extends IlxModule
     }
 
     function addPermission($route_template, $groups) {
-        $this->parameters[$route_template] = $groups;
+        $this->parameters["permissions"][$route_template] = $groups;
     }
 
     function addPermissions($permissions) {
