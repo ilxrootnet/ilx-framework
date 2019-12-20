@@ -112,7 +112,9 @@ class SecurityModule extends IlxModule
 
     function hooks()
     {
-        $permissions = [];
+        $permissions = [
+            "^\/auth\/dialect$" => [\Kodiak\Security\Model\User\Role::ANON_USER]
+        ];
         foreach ($this->parameters["auth_modes"] as $name => $params) {
             $auth_class_name =  SecurityModule::authModeDispatcher($name);
             /** @var AuthenticationMode $auth_mode */
