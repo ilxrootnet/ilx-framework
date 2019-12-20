@@ -73,7 +73,7 @@ class SecurityModule extends IlxModule
     function routes()
     {
         $routes = [
-            [
+            "getAuthDialect" => [
                 "method" => "POST",
                 "url" => "/auth/dialect",
                 "handler" => AuthController::class."::getAuthDialect"
