@@ -144,9 +144,13 @@ class FrameModule extends IlxModule
     public function addStyleSheet($theme_name, $stylesheet_path, $link=false, $overwrite = false) {
 
         $css_files = self::iterateOnDir($stylesheet_path, null);
+        $this->parameters[FrameModule::STYLESHEETS][$theme_name] = [];
         foreach ($css_files as $css_file) {
-            $this->parameters[FrameModule::STYLESHEETS][$theme_name] =
-                Ilx::cssPath(true).DIRECTORY_SEPARATOR.
+            if($css_file == ".DS_Store") {
+                continue;
+            }
+
+            $this->parameters[FrameModule::STYLESHEETS][$theme_name][] = Ilx::cssPath(true).DIRECTORY_SEPARATOR.
                 $theme_name.
                 $css_file;
         }
@@ -162,12 +166,13 @@ class FrameModule extends IlxModule
     public function addJavascript($theme_name, $javascript_path, $link = false, $overwrite = false) {
 
         $js_files = self::iterateOnDir($javascript_path, null);
+        $this->parameters[FrameModule::JAVASCRIPTS][$theme_name] = [];
         foreach ($js_files as $js_file) {
             if($js_file == ".DS_Store") {
                 continue;
             }
 
-            $this->parameters[FrameModule::JAVASCRIPTS][$theme_name] =
+            $this->parameters[FrameModule::JAVASCRIPTS][$theme_name][] =
                 Ilx::jsPath(true).DIRECTORY_SEPARATOR.
                 $theme_name.
                 $js_file;
@@ -184,8 +189,13 @@ class FrameModule extends IlxModule
 
     public function addImages($theme_name, $images_path, $link = false, $overwrite = false) {
         $images_files = self::iterateOnDir($images_path, null);
+        $this->parameters[FrameModule::IMAGES][$theme_name] = [];
         foreach ($images_files as $image_file) {
-            $this->parameters[FrameModule::IMAGES][$theme_name] =
+            if($image_file == ".DS_Store") {
+                continue;
+            }
+
+            $this->parameters[FrameModule::IMAGES][$theme_name][] =
                 Ilx::imagesPath(true).DIRECTORY_SEPARATOR.
                 $theme_name.
                 $image_file;
