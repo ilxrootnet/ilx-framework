@@ -9,6 +9,10 @@
             <link type="text/css" href="{{ stylesheet }}" rel="stylesheet" />
         {% endfor %}
 
+        {% for javascript in app.frame.getJavascripts() %}
+            <script src="{{ javascript }}"></script>
+        {% endfor %}
+
         <title>{{ app.frame.getTitle() }}</title>
 	</head>
     <body>
@@ -18,9 +22,5 @@
         </div>
         {# Footer #}
         {% include 'basic/footer.twig' %}
-
-        {% for javascript in app.frame.getJavascripts() %}
-            <script src="{{ javascript }}"></script>
-        {% endfor %}
     </body>
 </html>

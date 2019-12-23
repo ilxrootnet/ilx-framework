@@ -36,7 +36,7 @@ class RemoteUser extends SimpleRecord implements AuthenticatedUserInterface
      */
     public function isValidUsername(): bool
     {
-        self::getUserByUsername($this["username"]);
+        return self::getUserByUsername($this["username"]) != null;
     }
 
     public function getUserId(): ?int

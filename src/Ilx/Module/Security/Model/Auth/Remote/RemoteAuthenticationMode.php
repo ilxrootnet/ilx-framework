@@ -58,7 +58,8 @@ class RemoteAuthenticationMode extends AuthenticationMode
                     "username"              => "varchar(200) DEFAULT NULL",
                     "email"                 => "varchar(200) NOT NULL",
                     "firstname"             => "varchar(256) DEFAULT NULL",
-                    "lastname"              => "varchar(256) DEFAULT NULL"
+                    "lastname"              => "varchar(256) DEFAULT NULL",
+                    "external_id"           => "int(10)  unsigned NOT NULL"
                 ],
                 Table::PRIMARY_KEY => ["user_id"]
             ]
