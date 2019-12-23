@@ -89,13 +89,7 @@ class SecurityModule extends IlxModule
             "renderLoginFrame" => [
                 "method" => "GET",
                 "url" => "/auth/login",
-                "handler" => AuthController::class."::getAuthDialect"
-            ],
-
-            "executeLogout" => [
-                "method" => "POST",
-                "url" => "/auth/logout",
-                "handler" => AuthController::class."::getAuthDialect"
+                "handler" => AuthController::class."::renderLogin"
             ],
         ];
         foreach ($this->parameters["auth_modes"] as $name => $params) {
