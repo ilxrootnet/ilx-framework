@@ -28,7 +28,7 @@ class SecurityTheme extends Theme
 
     public function getFramesPath()
     {
-        return null;
+        return [];
     }
 
     public function getLoginForm()

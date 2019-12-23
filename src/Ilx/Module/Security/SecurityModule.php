@@ -159,6 +159,7 @@ class SecurityModule extends IlxModule
 
     function bootstrap(ModuleManager $moduleManager)
     {
+        print("Bootstraping SecurityModule...\n");
         /*
          * Ha létezik definiált FrameModule akkor hozzáadjuk a Security scripteket.
          */
@@ -166,6 +167,7 @@ class SecurityModule extends IlxModule
             /** @var FrameModule $frame_module */
             $frame_module = $moduleManager::get("Frame");
             $frame_module->addTheme("security", ModuleManager::getInstance());
+            print("\tAdded SecurityTheme to FrameModule.\n");
         }
         catch (InvalidArgumentException $exception) {
             print("\tAdding SecurityTheme has been skipped because the absence of FrameModule.\n");
