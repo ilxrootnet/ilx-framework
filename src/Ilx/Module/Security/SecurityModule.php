@@ -87,7 +87,7 @@ class SecurityModule extends IlxModule
             ],
 
             "renderLoginFrame" => [
-                "method" => "POST",
+                "method" => "GET",
                 "url" => "/auth/login",
                 "handler" => AuthController::class."::getAuthDialect"
             ],
