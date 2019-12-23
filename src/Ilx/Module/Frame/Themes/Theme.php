@@ -42,17 +42,25 @@ abstract class Theme
     public abstract function getFramesPath();
 
     /**
+     * Visszadja a témához tartozó authentikációs frame twig relatív útvonalát.
+     *
+     * @return string
+     */
+    public abstract function getAuthenticationFrame();
+
+
+    /**
      * login.twig relatív útvonala.
      *
      * @return string
      */
-    public abstract function getLoginFrame();
+    public abstract function getLoginForm();
 
     /**
      * registration.twig relatív útvonala.
      * @return mixed
      */
-    public abstract function getRegistrationFrame();
+    public abstract function getRegistrationForm();
 
     /**
      * View útvonal

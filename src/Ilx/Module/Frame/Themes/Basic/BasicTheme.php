@@ -27,17 +27,23 @@ class BasicTheme extends Theme
     public function getFramesPath()
     {
         return [
-            "basic" => "frame.twig"
+            "basic" => "frame.twig",
+            "basic_auth" => "auth/auth_frame.twig"
         ];
     }
 
-    public function getLoginFrame()
+    public function getLoginForm()
     {
-        return null;
+        return "basic/auth/login.twig";
     }
 
-    public function getRegistrationFrame()
+    public function getRegistrationForm()
     {
-        return null;
+        return "basic/auth/registration.twig";
+    }
+
+    public function getAuthenticationFrame()
+    {
+        return "basic/auth/auth_frame.twig";
     }
 }

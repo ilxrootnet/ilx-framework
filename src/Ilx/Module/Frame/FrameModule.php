@@ -3,14 +3,20 @@
 
 namespace Ilx\Module\Frame;
 
+/*
+ * Lehessen beállítani, egy auth frame-t. Erre csak a téma nevével lehet hivatkozni.
+ * Ebből az Auth contollerben ki lehet deríteni, hogy mit mivel lehet megjeleníteni.
+ */
 
 use Ilx\Ilx;
+use Ilx\Module\Frame\Model\Frame;
 use Ilx\Module\Frame\Themes\Basic\BasicTheme;
 use Ilx\Module\Frame\Themes\Theme;
 use Ilx\Module\IlxModule;
 use Ilx\Module\ModuleManager;
 use Ilx\Module\Resource\ResourceModule;
 use Ilx\Module\Resource\ResourcePath;
+use Ilx\Module\Security\Frame\SecurityTheme;
 use Ilx\Module\Twig\TwigModule;
 
 class FrameModule extends IlxModule
@@ -18,6 +24,7 @@ class FrameModule extends IlxModule
     const OVERWRITE = "overwrite";
     const THEMES = "themes";
     const DEFAULT_FRAME = "default_frame";
+    const AUTH_THEME = "auth_theme";
 
     const PAGE_TITLE = "page_title";
     const STYLESHEETS = "stylesheets";
@@ -29,21 +36,60 @@ class FrameModule extends IlxModule
 
     static $themes_mapping = [
         "basic" => BasicTheme::class,
+        "security" => SecurityTheme::class
     ];
+
+    private $auth_theme_obj = null;
 
     function defaultParameters()
     {
         return [
+            /*
+             * Létező erőforrások felülírása
+             *
+             * Ha igaz, az install és update fázisban is felírja a már létező erőforrásfájlokat (css, js, image fájlok).
+             * Célszerű emiatt false értéken tartani és csak indokolt esetben változtatni.
+             */
             FrameModule::OVERWRITE => false,
 
-            // Témák listája.
+            /*
+             * Témák listája
+             *
+             * A téma listában felsorolt témák lesznek elérhetőek az alkalmazásban.
+             * Itt hivatkozhatunk vagy egy ismert téma nevére ($themes_mapping)-ben definiáltak, vagy egy általunk definiált sémára
+             * aminek megadjuk az osztályának a nevét namespace-szel együtt.
+             *
+             */
             FrameModule::THEMES => [
                 "basic"
             ],
-            // Default frame neve
+
+            /*
+             * Az alapméretezett téma neve.
+             *
+             * Ha egy twig renderhez nincsen beállítva, hogy azt milyen keretben kell megejeleníteni, akkor ezt a témát
+             * fogja használni
+             */
             FrameModule::DEFAULT_FRAME => "basic",
 
+            /*
+             * Az authentikációhoz használt téma neve.
+             *
+             * A Frame ez alapján határozza meg, hogy melyik témával és formokkal kell megjeleníteni az authentikációs
+             * felületeket.
+             *
+             * Ha nem egyik téma sem megfelelő saját témát kell készíteni, majd azt beállítani
+             */
+            FrameModule::AUTH_THEME => "basic",
+
+            /*
+             * A megjelenített cím
+             */
             FrameModule::PAGE_TITLE  => "PageTitle",
+
+            /*
+             * Az alábbi mezőket automatikusan tölti ki a rendszer. Ezeket ne állítsd a modules.json-ből
+             */
             FrameModule::STYLESHEETS => [],
             FrameModule::JAVASCRIPTS => [],
             FrameModule::FRAMES => [],
@@ -70,7 +116,8 @@ class FrameModule extends IlxModule
                 "stylesheets" => $this->parameters[FrameModule::STYLESHEETS],
                 "javascripts" => $this->parameters[FrameModule::JAVASCRIPTS],
                 "images" => $this->parameters[FrameModule::IMAGES],
-                "frames" => $this->parameters[FrameModule::FRAMES]
+                "frames" => $this->parameters[FrameModule::FRAMES],
+                "auth_theme" => $this->parameters[FrameModule::AUTH_THEME]
             ]
         ]];
     }
@@ -94,39 +141,13 @@ class FrameModule extends IlxModule
             ]
         ]);
 
-        $overwrite = $this->parameters[FrameModule::OVERWRITE];
-        foreach ($this->parameters[FrameModule::THEMES] as $frame_name) {
+        foreach ($this->parameters[FrameModule::THEMES] as $theme_name) {
+            $this->addTheme($theme_name, $moduleManager);
+            print("\t- Added '$theme_name' theme\n");
+        }
 
-            /*
-             * Ha be van regisztrálva a $themes_mapping-be akkor a név alapján betöltjük
-             */
-            if(in_array($frame_name, array_keys(self::$themes_mapping))) {
-                $theme_class = self::$themes_mapping[$frame_name];
-                /** @var Theme $theme */
-                $theme = new $theme_class();
-            }
-            // Amúgy azt feltételezzük, hogy a frame_name a namespace-szel ellátott osztály
-            else {
-                /** @var Theme $theme */
-                $theme = new $frame_name();
-            }
-
-            # View-k regisztrálása
-            $twig_module->addTemplatePath($theme->getViewPath(),
-                $theme->getName(),
-                false,
-                false);
-            # a frame-eket még regisztrálni kell, mint új frame.
-            foreach ($theme->getFramesPath() as $frame_name => $frame_path) {
-                $this->parameters[FrameModule::FRAMES][$frame_name] = $theme->getName();
-                $twig_module->setFrame($frame_name, $theme->getName().DIRECTORY_SEPARATOR.$frame_path);
-            }
-
-            $this->addStyleSheet($theme->getName(), $theme->getCssPath(), false, $overwrite);
-            $this->addJavascript($theme->getName(), $theme->getJsPath(), false, $overwrite);
-            $this->addImages($theme->getName(), $theme->getImagesPath(), false, $overwrite);
-
-            print("\t- Added '$frame_name' as frame template\n");
+        if($this->auth_theme_obj == null) {
+            print("\t- WARNING: The authentication theme has not been set.\n");
         }
 
         # default frame beállítása
@@ -207,6 +228,50 @@ class FrameModule extends IlxModule
             $theme_name,
             $link ? ResourcePath::SOFT_COPY : ResourcePath::HARD_COPY,
             $overwrite);
+    }
+
+    /**
+     * @param string $theme_name
+     * @param ModuleManager $module_manager
+     */
+    public function addTheme($theme_name, $module_manager) {
+        $overwrite = $this->parameters[FrameModule::OVERWRITE];
+
+        /*
+         * Ha be van regisztrálva a $themes_mapping-be akkor a név alapján betöltjük
+         */
+        if(in_array($theme_name, array_keys(self::$themes_mapping))) {
+            $theme_class = self::$themes_mapping[$theme_name];
+            /** @var Theme $theme */
+            $theme = new $theme_class();
+        }
+        // Amúgy azt feltételezzük, hogy a frame_name a namespace-szel ellátott osztály
+        else {
+            /** @var Theme $theme */
+            $theme = new $theme_name();
+        }
+
+        # View-k regisztrálása
+        /** @var TwigModule $twig_module */
+        $twig_module = $module_manager::get("Twig");
+        $twig_module->addTemplatePath($theme->getViewPath(),
+            $theme->getName(),
+            false,
+            false);
+        # a frame-eket még regisztrálni kell, mint új frame.
+        foreach ($theme->getFramesPath() as $frame_name => $frame_path) {
+            $this->parameters[FrameModule::FRAMES][$frame_name] = $theme->getName();
+            $twig_module->setFrame($frame_name, $theme->getName().DIRECTORY_SEPARATOR.$frame_path);
+        }
+
+        // Ha egyezik a név, akkor beállítjuk auth_theme-nek
+        if($this->parameters[FrameModule::AUTH_THEME] == $theme->getName()) {
+            $this->auth_theme_obj = $theme;
+        }
+
+        $this->addStyleSheet($theme->getName(), $theme->getCssPath(), false, $overwrite);
+        $this->addJavascript($theme->getName(), $theme->getJsPath(), false, $overwrite);
+        $this->addImages($theme->getName(), $theme->getImagesPath(), false, $overwrite);
     }
 
     private static function iterateOnDir($base, $dir_offset) {

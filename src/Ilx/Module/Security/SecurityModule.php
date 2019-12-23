@@ -8,12 +8,14 @@ use Basil\DataSource\ArraySource;
 use Basil\DataSource\NestedSetSource;
 use Basil\Tree;
 use Ilx\Module\Database\DatabaseModule;
+use Ilx\Module\Frame\FrameModule;
 use Ilx\Module\IlxModule;
 use Ilx\Module\ModuleManager;
 use Ilx\Module\Security\Controller\AuthController;
 use Ilx\Module\Security\Model\Auth\Remote\RemoteAuthenticationMode;
 use Ilx\Module\Security\Model\Role;
 use Ilx\Module\Security\Model\UserRole;
+use InvalidArgumentException;
 use Kodiak\Security\Hook\FirewallHook;
 use Kodiak\Security\Hook\PandabaseAccessManagerHook;
 use Kodiak\Security\Model\Authentication\AuthenticationMode;
@@ -55,12 +57,17 @@ class SecurityModule extends IlxModule
     function defaultParameters()
     {
         return [
+            // Admin email cím amit a rendszer telepítésénél regisztrál be
             "admin" => null,
+            // Használható authentikációs módok
             "auth_modes" => [
                 self::TYPE_BASIC => []
             ],
+            // A használható authentikációs módok közül melyiket kell használni
             "auth_selector" => "first",
+            // Session lifetime
             "sess_exp_time" => 900,
+            // jogosultságok a routekhoz
             "permissions" => []
         ];
     }
@@ -77,7 +84,19 @@ class SecurityModule extends IlxModule
                 "method" => "POST",
                 "url" => "/auth/dialect",
                 "handler" => AuthController::class."::getAuthDialect"
-            ]
+            ],
+
+            "renderLoginFrame" => [
+                "method" => "POST",
+                "url" => "/auth/login",
+                "handler" => AuthController::class."::getAuthDialect"
+            ],
+
+            "executeLogout" => [
+                "method" => "POST",
+                "url" => "/auth/logout",
+                "handler" => AuthController::class."::getAuthDialect"
+            ],
         ];
         foreach ($this->parameters["auth_modes"] as $name => $params) {
             $auth_class_name =  SecurityModule::authModeDispatcher($name);
@@ -102,7 +121,7 @@ class SecurityModule extends IlxModule
             [
                 "class_name" => SecurityProvider::class,
                 "parameters" => [
-                    "expiration_time" => $this->parameters["sess_exp_time"],
+                    "sess_exp_time" => $this->parameters["sess_exp_time"],
                     "auth_selector" => $this->parameters["auth_selector"],
                     "auth_modes"  => $auth_modes
                 ]
@@ -140,6 +159,19 @@ class SecurityModule extends IlxModule
 
     function bootstrap(ModuleManager $moduleManager)
     {
+        /*
+         * Ha létezik definiált FrameModule akkor hozzáadjuk a Security scripteket.
+         */
+        try {
+            /** @var FrameModule $frame_module */
+            $frame_module = $moduleManager::get("Frame");
+            $frame_module->addTheme("security", ModuleManager::getInstance());
+        }
+        catch (InvalidArgumentException $exception) {
+            print("\tAdding SecurityTheme has been skipped because the absence of FrameModule.\n");
+        }
+
+
         /** @var DatabaseModule $database_module */
         $database_module = $moduleManager::get("Database");
 
