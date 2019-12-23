@@ -119,7 +119,7 @@ class Frame
     /**
      * @return Theme
      */
-    public function getAuthenticationTheme(): string
+    public function getAuthenticationTheme(): Theme
     {
         $cls_name = $this->auth_theme;
         return new $cls_name();
