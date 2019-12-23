@@ -44,6 +44,6 @@ class BasicTheme extends Theme
 
     public function getAuthenticationFrame()
     {
-        return "basic/auth/auth_frame.twig";
+        return "basic_auth";
     }
 }
