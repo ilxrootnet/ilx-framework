@@ -39,7 +39,7 @@ class FrameModule extends IlxModule
         "security" => SecurityTheme::class
     ];
 
-    private $auth_theme_obj = null;
+    private $auth_theme_class_name = null;
 
     function defaultParameters()
     {
@@ -117,7 +117,7 @@ class FrameModule extends IlxModule
                 "javascripts" => $this->parameters[FrameModule::JAVASCRIPTS],
                 "images" => $this->parameters[FrameModule::IMAGES],
                 "frames" => $this->parameters[FrameModule::FRAMES],
-                "auth_theme" => $this->parameters[FrameModule::AUTH_THEME]
+                "auth_theme" => $this->auth_theme_class_name
             ]
         ]];
     }
@@ -146,7 +146,7 @@ class FrameModule extends IlxModule
             print("\t- Added '$theme_name' theme\n");
         }
 
-        if($this->auth_theme_obj == null) {
+        if($this->auth_theme_class_name == null) {
             print("\t- WARNING: The authentication theme has not been set.\n");
         }
 
@@ -266,7 +266,7 @@ class FrameModule extends IlxModule
 
         // Ha egyezik a név, akkor beállítjuk auth_theme-nek
         if($this->parameters[FrameModule::AUTH_THEME] == $theme->getName()) {
-            $this->auth_theme_obj = $theme;
+            $this->auth_theme_class_name = get_class($theme);
         }
 
         $this->addStyleSheet($theme->getName(), $theme->getCssPath(), false, $overwrite);
