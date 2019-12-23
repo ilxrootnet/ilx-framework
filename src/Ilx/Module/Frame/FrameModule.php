@@ -153,6 +153,7 @@ class FrameModule extends IlxModule
         # default frame beállítása
         $default = $this->parameters[FrameModule::DEFAULT_FRAME];
         $twig_module->setFrame("default", DIRECTORY_SEPARATOR.$default.DIRECTORY_SEPARATOR."frame.twig");
+        $this->parameters[FrameModule::FRAMES]["default"] = $default;
         print("\t- '$default' has been set as default frame\n");
 
     }
