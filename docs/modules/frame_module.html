@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="hu">
+  <head>
+    <meta charset="utf-8" />
+    <title>Frame modul &#8212; Ilx 0.1.0 dokumentáció</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Tárgymutató" href="../genindex.html" />
+    <link rel="search" title="Keresés" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigáció</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="Általános tárgymutató"
+             accesskey="I">nyitóoldal</a></li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Ilx 0.1.0 dokumentáció</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="frame-modul">
+<h1>Frame modul<a class="headerlink" href="#frame-modul" title="Hivatkozás erre a fejezetcímre">¶</a></h1>
+<p>A frame modul célja, hogy alap twig sablonokat biztosítson, amelyek kompatibilisek a többi modullal és emellett definiáljon
+eg egyszerű oldal keretet, amit aztán már könnyen ki lehet egészíteni.</p>
+<p>A használni kívánt frame-ket a «frame_names»-ben lehet beállítani. Itt egy listát vár, mert elképzlehető egyszerre többre
+is szükség van. Jelenleg csak a «basic» template elérhető.</p>
+<p>A default frame-t a «default_frame»-ben lehet megadni. Itt a a frame_names-ben elehelyezett frame-k egyikére lehet hivatkozni.</p>
+<p>Ha nem szeretnénk, hogy telepítéskor másolja is a frame fájlokat, akkor a copy_on_install-t false-ra kell állítani (ennek
+amúgy ez a default értéke is). Ennek akkor van jelentősége, amikor egy kész rendszert akarunk feltelepíteni egy tetszőleges
+erőforrásra és már nincs szükség a frame-kre mert azokat a fejlesztés során már elkészítettük.
+copy_on_install = true esetén</p>
+<p>page_title paraméterrel a html oldal title értékét lehet beállítani.
+stylesheets paraméterben lehet megadni, hogy milyen css fájlokat kell beilleszteni az oldal forrásába
+javascripts paraméterben lehet megadni, hogy milyen js fájlokat kell beilleszteni az oldal forrásába</p>
+<div class="section" id="fuggosegek">
+<h2>Függőségek<a class="headerlink" href="#fuggosegek" title="Hivatkozás erre a fejezetcímre">¶</a></h2>
+<p>twig modul
+menu modul</p>
+</div>
+<div class="section" id="importalas">
+<h2>Importálás<a class="headerlink" href="#importalas" title="Hivatkozás erre a fejezetcímre">¶</a></h2>
+</div>
+<div class="section" id="parameterek">
+<h2>Paraméterek<a class="headerlink" href="#parameterek" title="Hivatkozás erre a fejezetcímre">¶</a></h2>
+</div>
+<div class="section" id="hasznalata">
+<h2>Használata<a class="headerlink" href="#hasznalata" title="Hivatkozás erre a fejezetcímre">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Frame modul</a><ul>
+<li><a class="reference internal" href="#fuggosegek">Függőségek</a></li>
+<li><a class="reference internal" href="#importalas">Importálás</a></li>
+<li><a class="reference internal" href="#parameterek">Paraméterek</a></li>
+<li><a class="reference internal" href="#hasznalata">Használata</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>Ez az Oldal</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/modules/frame_module.rst.txt"
+            rel="nofollow">Forrás megtekintése</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Gyorskeresés</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Ok" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigáció</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="Általános tárgymutató"
+             >nyitóoldal</a></li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Ilx 0.1.0 dokumentáció</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Attila Nagy.
+      <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1 használatával készült.
+    </div>
+  </body>
+</html>

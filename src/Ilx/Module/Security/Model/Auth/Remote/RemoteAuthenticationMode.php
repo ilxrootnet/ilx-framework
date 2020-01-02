@@ -15,7 +15,7 @@ class RemoteAuthenticationMode extends AuthenticationMode
 
     public static function name()
     {
-        return SecurityModule::TYPE_REMOTE;
+        return SecurityModule::AUTH_REMOTE;
     }
 
     public function userClass()

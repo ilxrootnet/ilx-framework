@@ -3,11 +3,6 @@
 
 namespace Ilx\Module\Frame;
 
-/*
- * Lehessen beállítani, egy auth frame-t. Erre csak a téma nevével lehet hivatkozni.
- * Ebből az Auth contollerben ki lehet deríteni, hogy mit mivel lehet megjeleníteni.
- */
-
 use Ilx\Ilx;
 use Ilx\Module\Frame\Model\Frame;
 use Ilx\Module\Frame\Themes\Basic\BasicTheme;

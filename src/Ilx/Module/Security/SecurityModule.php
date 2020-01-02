@@ -48,10 +48,10 @@ use PandaBase\Connection\Scheme\Table;
  */
 class SecurityModule extends IlxModule
 {
-    const TYPE_BASIC = "auth_basic";
-    const TYPE_TWO_FACTOR = "auth_2fact";
-    const TYPE_JWT = "auth_jwt";
-    const TYPE_REMOTE = "auth_remote";
+    const AUTH_BASIC = "auth_basic";
+    const AUTH_TWO_FACT = "auth_2fact";
+    const AUTH_JWT = "auth_jwt";
+    const AUTH_REMOTE = "auth_remote";
 
 
     function defaultParameters()
@@ -61,7 +61,7 @@ class SecurityModule extends IlxModule
             "admin" => null,
             // Használható authentikációs módok
             "auth_modes" => [
-                self::TYPE_BASIC => []
+                self::AUTH_BASIC => []
             ],
             // A használható authentikációs módok közül melyiket kell használni
             "auth_selector" => "first",

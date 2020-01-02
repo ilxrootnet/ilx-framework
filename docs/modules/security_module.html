@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="hu">
+  <head>
+    <meta charset="utf-8" />
+    <title>SecurityModule &#8212; Ilx 0.1.0 dokumentáció</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Tárgymutató" href="../genindex.html" />
+    <link rel="search" title="Keresés" href="../search.html" />
+    <link rel="next" title="Resource-ok kezelése" href="../resources.html" />
+    <link rel="prev" title="Saját modul fejlesztése" href="custom_module.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigáció</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="Általános tárgymutató"
+             accesskey="I">nyitóoldal</a></li>
+        <li class="right" >
+          <a href="../resources.html" title="Resource-ok kezelése"
+             accesskey="N">következő</a> |</li>
+        <li class="right" >
+          <a href="custom_module.html" title="Saját modul fejlesztése"
+             accesskey="P">előző</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Ilx 0.1.0 dokumentáció</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../modules.html" accesskey="U">Modulok</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="securitymodule">
+<h1>SecurityModule<a class="headerlink" href="#securitymodule" title="Hivatkozás erre a fejezetcímre">¶</a></h1>
+<p>A SecurityModule feladata egy alkalmazáshoz kapcsolódó authentikáció és authorizáció megvalósítása. Az alábbiakban a
+modul funkcionalitásának részletes bemutatása következik. Első lépésben az alap beállításokat mutatjuk be, ezután az
+authentikációs lehetőségek következnek végén pedig az authorizáció működését mutatjuk be.</p>
+<div class="section" id="fuggosegek">
+<h2>Függőségek<a class="headerlink" href="#fuggosegek" title="Hivatkozás erre a fejezetcímre">¶</a></h2>
+<p>Itt azoknak a moduloknak a listáját találod, amelyek szükségesek a SecurityModule működéséhez:</p>
+<ul class="simple">
+<li><p>DatabaseModule <em>(kötelező)</em></p></li>
+<li><p>FrameModule <em>(opcionális)</em></p></li>
+<li><p>MailerModule <em>(opcionális)</em></p></li>
+</ul>
+</div>
+<div class="section" id="importalas">
+<h2>Importálás<a class="headerlink" href="#importalas" title="Hivatkozás erre a fejezetcímre">¶</a></h2>
+<p>A modules.json-höz egyszerűen hozzá kell adni a következő bejegyzést:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;Security&quot;</span><span class="p">:</span> <span class="p">[]</span>
+</pre></div>
+</div>
+<p><em>Ebben az esetben a modul egyszerű jelszavas authentikációt biztosít, authorizáció nélkül, 900 másodperces session lifetime-mal (15 perc).</em></p>
+</div>
+<div class="section" id="parameterek">
+<h2>Paraméterek<a class="headerlink" href="#parameterek" title="Hivatkozás erre a fejezetcímre">¶</a></h2>
+<ul class="simple">
+<li><p>admin: Admin email cím amit a rendszer telepítésénél regisztrál be</p></li>
+<li><p>auth_modes: Használható authentikációs módok felsorolása</p></li>
+<li><p>auth_selector: Authentikációs mód választó neve vagy hivatkozás a metódusra</p></li>
+<li><p>sess_exp_time: Session lifetime</p></li>
+<li><p>permissions: Route-okra definiált jogosultságok.</p></li>
+</ul>
+<div class="section" id="parameter-admin">
+<h3>Paraméter: admin<a class="headerlink" href="#parameter-admin" title="Hivatkozás erre a fejezetcímre">¶</a></h3>
+<p>A AUTH_REMOTE authentikációs módot leszámítva minden esetben szükség lehet egy admin felhasználó beállítására. Az admin
+felhasználót az alkalmazás telepítésénél generálja a modul. Azért, hogy ne legyen beégetve jelszó a konfigurációs fájlba
+az admin felhasználóhoz csak egy email cím megadása a szükséges. Az alkalmazás indítása után az elfelejtett jelszó
+funkciót használva lehet jelszót beállítani az admin felhasználónak. (Az admin felhasználó a telepítéskor jön létre.)</p>
+<p>Például, ha azt szeretnénk, hogy az admin felhasználóhoz tartozó email cím a <a class="reference external" href="mailto:admin&#37;&#52;&#48;mysystem&#46;com">admin<span>&#64;</span>mysystem<span>&#46;</span>com</a> legyen:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;Security&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;admin&quot;</span><span class="p">:</span> <span class="s2">&quot;admin@mysystem.com&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="parameter-auth-modes">
+<h3>Paraméter: auth_modes<a class="headerlink" href="#parameter-auth-modes" title="Hivatkozás erre a fejezetcímre">¶</a></h3>
+<p>Az auth_modes paraméterrel lehet beállítani, hogy az alkalmazásban milyen authentikácós módokat tudnak használni a
+felhasználók. Az authentikációs módok közül párhuzamosan több is használható. Azt, hogy éppen melyik legyen aktív a
+auth_selector paraméter beállításával tudjuk módosítani. A következő authentikációs módokat támogatja:</p>
+<ul class="simple">
+<li><p>AUTH_BASIC: Alap felhasználónév és jelszó authentikáció</p></li>
+<li><p>AUTH_TWO_FACTOR: Alap authentikáció két-faktorossal kiegészítve</p></li>
+<li><p>AUTH_JWT: JSON Web Token authentikáció</p></li>
+<li><p>AUTH_REMOTE: Távoli rendszeren keresztüli authentikáció</p></li>
+</ul>
+<p>Az authentikációs módokról és paraméterezési lehetőségeiről bővebben az <a class="reference internal" href="#auth-label"><span class="std std-ref">Authentikáció</span></a> alfejezetben olvashatsz.</p>
+<p>Az előző példát folytatva, csak AUTH_BASIC-et használva (alapméretezett beállításaival):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;Security&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;admin&quot;</span><span class="p">:</span> <span class="s2">&quot;admin@mysystem.com&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;auth_modes&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;auth_basic&quot;</span><span class="p">:</span> <span class="p">[]</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="authentikacio">
+<span id="auth-label"></span><h2>Authentikáció<a class="headerlink" href="#authentikacio" title="Hivatkozás erre a fejezetcímre">¶</a></h2>
+<div class="section" id="type-basic">
+<h3>TYPE_BASIC<a class="headerlink" href="#type-basic" title="Hivatkozás erre a fejezetcímre">¶</a></h3>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">SecurityModule</a><ul>
+<li><a class="reference internal" href="#fuggosegek">Függőségek</a></li>
+<li><a class="reference internal" href="#importalas">Importálás</a></li>
+<li><a class="reference internal" href="#parameterek">Paraméterek</a><ul>
+<li><a class="reference internal" href="#parameter-admin">Paraméter: admin</a></li>
+<li><a class="reference internal" href="#parameter-auth-modes">Paraméter: auth_modes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#authentikacio">Authentikáció</a><ul>
+<li><a class="reference internal" href="#type-basic">TYPE_BASIC</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Előző témakör</h4>
+  <p class="topless"><a href="custom_module.html"
+                        title="előző fejezet">Saját modul fejlesztése</a></p>
+  <h4>Következő témakör</h4>
+  <p class="topless"><a href="../resources.html"
+                        title="következő fejezet">Resource-ok kezelése</a></p>
+  <div role="note" aria-label="source link">
+    <h3>Ez az Oldal</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/modules/security_module.rst.txt"
+            rel="nofollow">Forrás megtekintése</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Gyorskeresés</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Ok" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigáció</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="Általános tárgymutató"
+             >nyitóoldal</a></li>
+        <li class="right" >
+          <a href="../resources.html" title="Resource-ok kezelése"
+             >következő</a> |</li>
+        <li class="right" >
+          <a href="custom_module.html" title="Saját modul fejlesztése"
+             >előző</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Ilx 0.1.0 dokumentáció</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../modules.html" >Modulok</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Attila Nagy.
+      <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1 használatával készült.
+    </div>
+  </body>
+</html>

@@ -20,4 +20,4 @@ Modul lista
    modules/resource_module
    modules/menu_module
    modules/custom_module
-   modules/theme_module
+   modules/security_module

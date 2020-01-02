@@ -4,74 +4,53 @@
 namespace Ilx\Module\Security\Model\Auth\Basic;
 
 
-use Kodiak\Security\Model\User\AuthenticatedUserInterface;
-use PandaBase\Record\SimpleRecord;
+use Ilx\Module\Security\Model\Auth\User;
+use PandaBase\Connection\ConnectionManager;
+use PandaBase\Exception\AccessDeniedException;
 
-class BasicUser extends SimpleRecord implements AuthenticatedUserInterface
+class BasicUser extends User
 {
-
-    public function getHashedPassword(): ?string
-    {
-        // TODO: Implement getHashedPassword() method.
+    /**
+     * @throws AccessDeniedException
+     */
+    public function increaseFailedLoginCounter() {
+        $counter = self::getFailedLoginCounter($this["user_id"]);
+        $counter->set("failed_log_count", intval($counter->get("failed_log_count")) + 1);
+        ConnectionManager::persist($counter);
     }
 
-    public function clear(): void
-    {
-        // TODO: Implement clear() method.
+    /**
+     * @return int
+     * @throws AccessDeniedException
+     */
+    public function getFailedLoginCount() {
+        $counter = self::getFailedLoginCounter($this["user_id"]);
+        return intval($counter->get("failed_log_count"));
     }
 
-    public function getUsername(): ?string
-    {
-        // TODO: Implement getUsername() method.
+    /**
+     * @throws AccessDeniedException
+     */
+    public function resetFailedLoginCounter() {
+        $counter = self::getFailedLoginCounter($this["user_id"]);
+        $counter->set("failed_log_count", 0);
+        ConnectionManager::persist($counter);
     }
 
-    public function isValidUsername(): bool
-    {
-        // TODO: Implement isValidUsername() method.
-    }
-
-    public function getUserId(): ?int
-    {
-        // TODO: Implement getUserId() method.
-    }
-
-    public function getRoles(): array
-    {
-        // TODO: Implement getRoles() method.
-    }
-
-    public function hasRole($role): bool
-    {
-        // TODO: Implement hasRole() method.
-    }
-
-    public function get2FASecret()
-    {
-        // TODO: Implement get2FASecret() method.
-    }
-
-    public static function getUserByUserId(int $user_id): AuthenticatedUserInterface
-    {
-        // TODO: Implement getUserByUserId() method.
-    }
-
-    public static function getUserByUsername(string $username): AuthenticatedUserInterface
-    {
-        // TODO: Implement getUserByUsername() method.
-    }
-
-    public static function getUserByEmail(string $email): AuthenticatedUserInterface
-    {
-        // TODO: Implement getUserByEmail() method.
-    }
-
-    public static function getUserFromSecuritySession(?int $user_id, ?string $username, ?array $roles): AuthenticatedUserInterface
-    {
-        // TODO: Implement getUserFromSecuritySession() method.
-    }
-
-    public function isRoot()
-    {
-        // TODO: Implement isRoot() method.
+    /**
+     * @param $user_id
+     * @return FailedLoginCount
+     * @throws AccessDeniedException
+     */
+    private static function getFailedLoginCounter($user_id) {
+        $counter = new FailedLoginCount($user_id);
+        if(!$counter->isValid()) {
+            $counter = new FailedLoginCount([
+                "user_id" => $user_id,
+                "failed_login_count" => 0
+            ]);
+            ConnectionManager::persist($counter);
+        }
+        return $counter;
     }
 }
