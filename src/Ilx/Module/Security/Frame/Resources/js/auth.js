@@ -1,7 +1,7 @@
 
-function login(username, password) {
+function login(username, password, callback) {
     let dialect = getDialect(username);
-    return dialect.login(password);
+    dialect.login(password, callback);
 }
 
 
@@ -47,21 +47,80 @@ class Dialect {
 
 class RemoteDialect extends Dialect {
 
-    login(password) {
-        var login_result;
-        $.ajax({
-            type: "POST",
-            url: "/auth/remote/login",
-            data: $.param({
-                "username": this.username,
-                "password": password
-            }),
-            success: function(result) {
-                login_result = result;
-            },
-            dataType: "html"
+    login(password, callback) {
+        $.post('/auth/remote/login', {
+            "username": this.username,
+            "password": password
+        }, callback);
+    }
+}
+
+class LoginLayout {
+
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        var _self = this;
+        // ablak alaphelyzetbe méretezése
+        let w=$(window).width();
+        let h=$(window).height();
+
+        $(window).resize(function(){
+            let w=$(window).width();
+            let h=$(window).height();
+            _self.onResize(w,h);
+        });        
+        _self.onResize(w,h);
+        // fel scrollozás
+        $(window).scrollTop(0);
+        // hide-screen eltűntetése
+        $("#hide-screen").addClass('hidden');
+        setTimeout(function() {
+            $("#hide-screen").css({'display':'none'});
+        },300);
+        // hibaüzenet kezelése
+        _self.failBox=$("body > .login-wrapper > .form-wrapper > .fail-box");
+
+        // input mezők keyup eseményei: ha van hiba jelzés, akkor azt eltűntetjük
+        $("input[name=username]").unbind('keypress');
+        $("input[name=username]").keypress(function() {
+            _self.failBoxHide();
+        });
+        $("input[name=password]").unbind('keypress');
+        $("input[name=password]").keypress(function() {
+            _self.failBoxHide();
         });
 
-        return login_result;
+        // enter gomb jelszó mezőben = belépés gomb
+        $('input[name=password]').keypress(function(e){
+            if (e.which=='13') $('button.login').click();
+        });        
+    }
+
+    onResize(w, h) {
+        $("body > .login-wrapper").css({'height':h+'px'});
+    }
+
+
+    failBoxHide() {
+        if ($(this.failBox).hasClass("show")) {
+            $(this.failBox).removeClass("show");
+            $(this.failBox).animate({
+                'top': 200
+            },300,'easeInBack');
+        }
+    }
+
+    failBoxShow() {
+        $(this.failBox).addClass('show');
+        $(this.failBox).animate({
+            'top': 300
+        },700,'easeOutBounce');        
+    }
+
+    failBoxSet(v) {
+        $(this.failBox).html(v)
     }
 }
