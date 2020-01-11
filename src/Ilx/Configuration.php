@@ -16,6 +16,9 @@ class Configuration
 {
     private $config;
 
+    const NOT_ROUTER_HOOK = false;
+    const ROUTER_HOOK = true;
+
     /**
      * Configuration constructor.
      * @param array $config
@@ -82,14 +85,21 @@ class Configuration
      * Hook hozzáadása.
      *
      * @param array $hook
+     * @param bool $router_hook
      */
-    public function addHook($hook) {
-        $this->config[KodiConf::HOOKS][] = $hook;
+    public function addHook($hook, $router_hook = false) {
+        if($router_hook) {
+            $this->config[KodiConf::ROUTER]["parameters"]["hooks"][] = $hook;
+        }
+        else {
+            $this->config[KodiConf::HOOKS][] = $hook;
+        }
     }
 
     /**
      * Útvonal hozzáadása.
      *
+     * @param string $route_name
      * @param array $route
      */
     public function addRoute($route_name, $route) {
@@ -121,6 +131,7 @@ class Configuration
         KodiConf::ROUTER => [
             "class_name" => SimpleRouter::class,
             "parameters" => [
+                "hooks" => []
             ]
         ]
     ];

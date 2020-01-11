@@ -7,6 +7,7 @@ namespace Ilx\Module\Security;
 use Basil\DataSource\ArraySource;
 use Basil\DataSource\NestedSetSource;
 use Basil\Tree;
+use Ilx\Configuration;
 use Ilx\Module\Database\DatabaseModule;
 use Ilx\Module\Frame\FrameModule;
 use Ilx\Module\IlxModule;
@@ -140,15 +141,26 @@ class SecurityModule extends IlxModule
 
         return [
             [
-                "class_name" => FirewallHook::class,
-                "parameters" => [
-                    "permissions" => $permissions
-                ]
+                [
+                    "class_name" => FirewallHook::class,
+                    "parameters" => [
+                        "permissions" => $permissions
+                    ]
+                ],
+                Configuration::NOT_ROUTER_HOOK
             ],
             [
-                "class_name" => PandabaseAccessManagerHook::class,
-                "parameters" => []
+                [
+                    "class_name" => PandabaseAccessManagerHook::class,
+                    "parameters" => []
+                ],
+                Configuration::NOT_ROUTER_HOOK
             ],
+            [
+                "\Kodiak\Security\Hook\SessionRouterHook::class",
+                Configuration::ROUTER_HOOK
+            ]
+
         ];
     }
 

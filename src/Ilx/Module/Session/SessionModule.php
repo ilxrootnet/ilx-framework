@@ -4,6 +4,7 @@
 namespace Ilx\Module\Session;
 
 
+use Ilx\Configuration;
 use Ilx\Module\Database\DatabaseModule;
 use Ilx\Module\IlxModule;
 use Ilx\Module\ModuleManager;
@@ -45,18 +46,25 @@ class SessionModule extends IlxModule
     {
         return [
             [
-                "class_name" => PandabaseSessionHook::class,
-                "parameters" => [
-                    "connection_name" => "default",
-                    "options" => [
-                        "db_table" => "ilx_sessions"
+                [
+                    "class_name" => PandabaseSessionHook::class,
+                    "parameters" => [
+                        "connection_name" => "default",
+                        "options" => [
+                            "db_table" => "ilx_sessions"
+                        ]
                     ]
-                ]
+                ],
+                Configuration::NOT_ROUTER_HOOK
             ],
             [
-                "class_name" => SessionTokenHook::class,
-                "parameters" => []
-            ],
+                [
+                    "class_name" => SessionTokenHook::class,
+                    "parameters" => []
+                ],
+                Configuration::NOT_ROUTER_HOOK
+            ]
+
         ];
     }
 

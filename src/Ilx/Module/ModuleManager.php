@@ -117,7 +117,8 @@ class ModuleManager
 
             // Hook-ok hozzáadása
             foreach ($module->hooks() as $hook) {
-                $configuration->addHook($hook);
+                // Hogy az sima vagy router hook az 1. index alatt lévő értékből derül ki
+                $configuration->addHook($hook[0], $hook[1]);
             }
 
             // ServiceProvider-ek hozzáadása
