@@ -51,17 +51,15 @@ class RemoteAuthenticationMode extends AuthenticationMode
          */
         return [
             RemoteUser::class  => [
-                Table::TABLE_NAME => "users",
-                Table::TABLE_ID   => "user_id",
+                Table::TABLE_NAME => "auth_remote",
+                Table::TABLE_ID   => "remote_auth_id",
                 Table::FIELDS     => [
-                    "user_id"               => "int(10) unsigned NOT NULL AUTO_INCREMENT",
-                    "username"              => "varchar(200) DEFAULT NULL",
-                    "email"                 => "varchar(200) NOT NULL",
-                    "firstname"             => "varchar(256) DEFAULT NULL",
-                    "lastname"              => "varchar(256) DEFAULT NULL",
-                    "external_id"           => "int(10) unsigned NOT NULL"
+                    "remote_auth_id"=> "int(10) unsigned NOT NULL AUTO_INCREMENT",
+                    "user_id"       => "int(10) unsigned NOT NULL",
+                    "external_id"   => "int(10) unsigned NOT NULL",
+                    "last_login"    => "datetime",
                 ],
-                Table::PRIMARY_KEY => ["user_id"]
+                Table::PRIMARY_KEY => ["remote_auth_id"]
             ]
         ];
     }

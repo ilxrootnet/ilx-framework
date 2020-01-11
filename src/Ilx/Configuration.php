@@ -6,6 +6,7 @@ namespace Ilx;
 
 use Kodiak\Core\KodiConf;
 use Kodiak\Core\Router\SimpleRouter;
+use Kodiak\Response\DefaultErrorResponse;
 
 /**
  * Class Configuration
@@ -106,6 +107,11 @@ class Configuration
         $this->config[KodiConf::ROUTES][$route_name] = $route;
     }
 
+
+    public function addErrorHandler($error_handler) {
+        $this->config[KodiConf::ERROR_HANDLER] = $error_handler;
+    }
+
     /**
      * Kodiak konfiguráció váz.
      * @var array
@@ -133,6 +139,8 @@ class Configuration
             "parameters" => [
                 "hooks" => []
             ]
-        ]
+        ],
+
+        KodiConf::ERROR_HANDLER => DefaultErrorResponse::class
     ];
 }

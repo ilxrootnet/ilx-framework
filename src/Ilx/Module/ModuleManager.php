@@ -130,6 +130,10 @@ class ModuleManager
             foreach ($module->routes() as $route_name => $route) {
                 $configuration->addRoute($route_name, $route);
             }
+
+            if($module->errorHandler() != null) {
+                $configuration->addErrorHandler($module->errorHandler());
+            }
         }
         return $configuration;
     }

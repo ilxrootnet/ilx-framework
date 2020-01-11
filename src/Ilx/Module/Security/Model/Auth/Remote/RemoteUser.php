@@ -4,114 +4,39 @@
 namespace Ilx\Module\Security\Model\Auth\Remote;
 
 
-use Ilx\Module\Security\Model\UserRole;
-use Kodiak\Security\Model\User\AuthenticatedUserInterface;
-use Kodiak\Security\Model\User\Role as BaseRole;
+use Ilx\Module\Security\Model\Auth\User;
 use PandaBase\Connection\ConnectionManager;
-use PandaBase\Record\SimpleRecord;
 
-class RemoteUser extends SimpleRecord implements AuthenticatedUserInterface
+class RemoteUser extends User
 {
-
-    private $roles;
-
-    public function getHashedPassword(): ?string
-    {
-        return null;
-    }
-
-    public function clear(): void
-    {
-
-    }
-
-    public function getUsername(): ?string
-    {
-        return $this["username"];
-    }
-
     /**
-     * @return bool
-     * @throws \PandaBase\Exception\AccessDeniedException
+     * @var RemoteUserData
      */
-    public function isValidUsername(): bool
-    {
-        return self::getUserByUsername($this["username"]) != null;
+    private $remote_data = null;
+
+    private function loadUserData() {
+        $this->remote_data = RemoteUserData::fromUserId($this["user_id"]);
     }
 
-    public function getUserId(): ?int
-    {
-        return $this["user_id"];
-    }
-
-    public function getRoles(): array
-    {
-        if($this->roles == null) {
-            $this->roles = UserRole::getRoles($this["user_id"]);
+    public function getExternalId() {
+        if($this->remote_data == null) {
+            $this->loadUserData();
         }
-        array_unshift($this->roles, BaseRole::AUTH_USER);
-
-        return $this->roles;
+        return $this->remote_data["external_id"];
     }
 
-    public function hasRole($role): bool
-    {
-        return in_array($role, $this->getRoles());
+    public function setLastLogin($last_login) {
+        if($this->remote_data == null) {
+            $this->loadUserData();
+        }
+        $this->remote_data["last_login"] = $last_login;
+        ConnectionManager::persist($this->remote_data);
     }
 
-    public function get2FASecret()
-    {
-        // TODO: Implement get2FASecret() method.
-    }
-
-    /**
-     * @param int $user_id
-     * @return AuthenticatedUserInterface
-     * @throws \PandaBase\Exception\AccessDeniedException
-     */
-    public static function getUserByUserId(int $user_id): AuthenticatedUserInterface
-    {
-        return new RemoteUser($user_id);
-    }
-
-    /**
-     * @param string $username
-     * @return AuthenticatedUserInterface
-     * @throws \PandaBase\Exception\AccessDeniedException
-     */
-    public static function getUserByUsername(string $username): AuthenticatedUserInterface
-    {
-        return new RemoteUser(ConnectionManager::fetchAssoc("SELECT * FROM users WHERE username=:username", [
-            "username" => $username
-        ]));
-    }
-
-    /**
-     * @param string $email
-     * @return AuthenticatedUserInterface
-     * @throws \PandaBase\Exception\AccessDeniedException
-     */
-    public static function getUserByEmail(string $email): AuthenticatedUserInterface
-    {
-        return new RemoteUser(ConnectionManager::fetchAssoc("SELECT * FROM users WHERE email=:email", [
-            "email" => $email
-        ]));
-    }
-
-    /**
-     * @param int|null $user_id
-     * @param string|null $username
-     * @param array|null $roles
-     * @return AuthenticatedUserInterface
-     * @throws \PandaBase\Exception\AccessDeniedException
-     */
-    public static function getUserFromSecuritySession(?int $user_id, ?string $username, ?array $roles): AuthenticatedUserInterface
-    {
-        return new RemoteUser($user_id);
-    }
-
-    public function isRoot()
-    {
-        return false;
+    public function getLastLogin() {
+        if($this->remote_data == null) {
+            $this->loadUserData();
+        }
+        return $this->remote_data["last_login"];
     }
 }

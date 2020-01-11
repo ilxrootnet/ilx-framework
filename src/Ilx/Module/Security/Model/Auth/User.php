@@ -4,73 +4,122 @@
 namespace Ilx\Module\Security\Model\Auth;
 
 
+use Ilx\Module\Security\Model\UserRole;
+use Kodiak\Security\Model\User\AnonymUser;
 use Kodiak\Security\Model\User\AuthenticatedUserInterface;
+use Kodiak\Security\Model\User\Role as BaseRole;
+use PandaBase\Connection\ConnectionManager;
+use PandaBase\Exception\AccessDeniedException;
+use PandaBase\Exception\ConnectionNotExistsException;
+use PandaBase\Record\SimpleRecord;
 
-class User implements AuthenticatedUserInterface
+class User extends SimpleRecord  implements AuthenticatedUserInterface
 {
+
+    /**
+     * User role-ok listája
+     * @var array
+     */
+    private $roles = null;
 
     public function getHashedPassword(): ?string
     {
-        // TODO: Implement getHashedPassword() method.
+        return $this["password"];
     }
 
     public function clear(): void
     {
-        // TODO: Implement clear() method.
+        // nothing to do
     }
 
     public function getUsername(): ?string
     {
-        // TODO: Implement getUsername() method.
+        return $this["username"];
     }
 
     public function isValidUsername(): bool
     {
-        // TODO: Implement isValidUsername() method.
+        return $this->isValid();
     }
 
     public function getUserId(): ?int
     {
-        // TODO: Implement getUserId() method.
+        return $this["user_id"];
     }
 
+    /**
+     * @return array
+     * @throws ConnectionNotExistsException
+     */
     public function getRoles(): array
     {
-        // TODO: Implement getRoles() method.
+        if($this->roles == null) {
+            $this->roles = UserRole::getRoles($this["user_id"]);
+        }
+        array_unshift($this->roles, BaseRole::AUTH_USER);
+
+        return $this->roles;
     }
 
     public function hasRole($role): bool
     {
-        // TODO: Implement hasRole() method.
+        try {
+            return in_array($role, $this->getRoles());
+        } catch (ConnectionNotExistsException $e) {
+            return false;
+        }
     }
 
+    // TODO: megszüntetni ezt a metódust
     public function get2FASecret()
     {
-        // TODO: Implement get2FASecret() method.
+
     }
 
     public static function getUserByUserId(int $user_id): AuthenticatedUserInterface
     {
-        // TODO: Implement getUserByUserId() method.
+        try {
+            return new User(ConnectionManager::fetchAssoc("SELECT * FROM users WHERE user_id=:user_id", [
+                "user_id" => $user_id
+            ]));
+        } catch (AccessDeniedException $e) {
+            return new AnonymUser();
+        }
     }
 
     public static function getUserByUsername(string $username): AuthenticatedUserInterface
     {
-        // TODO: Implement getUserByUsername() method.
+        try {
+            return new User(ConnectionManager::fetchAssoc("SELECT * FROM users WHERE username=:username", [
+                "username" => $username
+            ]));
+        } catch (AccessDeniedException $e) {
+            return new AnonymUser();
+        }
     }
 
     public static function getUserByEmail(string $email): AuthenticatedUserInterface
     {
-        // TODO: Implement getUserByEmail() method.
+        try {
+            return new User(ConnectionManager::fetchAssoc("SELECT * FROM users WHERE email=:email", [
+                "email" => $email
+            ]));
+        } catch (AccessDeniedException $e) {
+            return new AnonymUser();
+        }
     }
 
     public static function getUserFromSecuritySession(?int $user_id, ?string $username, ?array $roles): AuthenticatedUserInterface
     {
-        // TODO: Implement getUserFromSecuritySession() method.
+        try {
+            return new User($user_id);
+        } catch (AccessDeniedException $e) {
+            return new AnonymUser();
+        }
     }
 
     public function isRoot()
     {
-        // TODO: Implement isRoot() method.
+        return false;
     }
 }

@@ -212,32 +212,13 @@ class SecurityModule extends IlxModule
             ]
         ];
 
-        // A meglévő user táblákat össze kell fésülni
-        $user_classes = [];
         foreach ($this->parameters["auth_modes"] as $name => $params) {
             $auth_class_name = SecurityModule::authModeDispatcher($name);
             /** @var AuthenticationMode $auth_mode */
             $auth_mode = new $auth_class_name($params);
             $tables = array_merge($auth_mode->tables(), $tables);
-            $user_classes[] = $auth_mode->userClass();
         }
 
-        // Össze kell gyűjteni az összes lehetséges mezőt
-        $user_fields = [];
-        foreach ($user_classes as $user_class) {
-            $user_fields = array_merge($user_fields, $tables[$user_class][Table::FIELDS]);
-        }
-        // Az univerzális user osztály legenerálása
-        $univ_user_table = [
-            Table::TABLE_NAME => "users",
-            Table::TABLE_ID   => "user_id",
-            Table::FIELDS     => $user_fields,
-            Table::PRIMARY_KEY => ["user_id"]
-        ];
-        // Felülírjuk az eddigi létező tábla definíciókat
-        foreach ($user_classes as $user_class) {
-            $tables[$user_class] = $univ_user_table;
-        }
         $database_module->addTables($tables);
     }
 

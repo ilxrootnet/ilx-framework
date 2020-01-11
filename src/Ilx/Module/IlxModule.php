@@ -5,6 +5,7 @@ namespace Ilx\Module;
 
 
 use ArrayAccess;
+use Kodiak\Response\DefaultErrorResponse;
 
 
 abstract class IlxModule implements ArrayAccess
@@ -95,6 +96,11 @@ abstract class IlxModule implements ArrayAccess
      * @param bool $include_templates Ha igaz, akkor a template-ket is másolni kell
      */
     abstract function initScript($include_templates);
+
+
+    function errorHandler() {
+        return DefaultErrorResponse::class;
+    }
 
 
     public function offsetExists($offset)
