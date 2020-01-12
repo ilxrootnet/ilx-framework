@@ -1,10 +1,9 @@
 <?php
 
 
-namespace Ilx\Module\Security\Model\Auth;
+namespace Ilx\Module\Security\Model;
 
 
-use Ilx\Module\Security\Model\UserRole;
 use Kodiak\Security\Model\User\AnonymUser;
 use Kodiak\Security\Model\User\AuthenticatedUserInterface;
 use Kodiak\Security\Model\User\Role as BaseRole;

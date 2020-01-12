@@ -15,6 +15,7 @@ use Ilx\Module\ModuleManager;
 use Ilx\Module\Security\Controller\AuthController;
 use Ilx\Module\Security\Model\Auth\Remote\RemoteAuthenticationMode;
 use Ilx\Module\Security\Model\Role;
+use Ilx\Module\Security\Model\User;
 use Ilx\Module\Security\Model\UserRole;
 use InvalidArgumentException;
 use Kodiak\Security\Hook\FirewallHook;
@@ -187,6 +188,21 @@ class SecurityModule extends IlxModule
 
         // A Role és UserRole mindig szerepel a rendszerben
         $tables = [
+            User::class  => [
+                Table::TABLE_NAME => "users",
+                Table::TABLE_ID   => "user_id",
+                Table::FIELDS     => [
+                    "user_id"               => "int(10) unsigned NOT NULL AUTO_INCREMENT",
+                    "username"              => "varchar(200) DEFAULT NULL",
+                    "email"                 => "varchar(200) NOT NULL",
+                    "firstname"             => "varchar(256) DEFAULT NULL",
+                    "lastname"              => "varchar(256) DEFAULT NULL",
+                    "external_id"           => "int(10) unsigned NOT NULL"
+
+                 ],
+                Table::PRIMARY_KEY => ["user_id"]
+            ],
+
             Role::class  => [
                 Table::TABLE_NAME => "roles",
                 Table::TABLE_ID   => "node_id",
