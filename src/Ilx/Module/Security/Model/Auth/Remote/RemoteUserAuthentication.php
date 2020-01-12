@@ -4,6 +4,7 @@
 namespace Ilx\Module\Security\Model\Auth\Remote;
 
 
+use Ilx\Module\Security\Model\User;
 use Kodiak\Security\Model\Authentication\AuthenticationInterface;
 use Kodiak\Security\Model\Authentication\AuthenticationTaskResult;
 use PandaBase\Connection\ConnectionManager;
@@ -54,8 +55,7 @@ class RemoteUserAuthentication extends AuthenticationInterface
                 "username" => $remote_data["username"],
                 "email" => $remote_data["email"],
                 "firstname" => $remote_data["firstname"],
-                "lastname" => $remote_data["lastname"],
-                "external_id" => $remote_data["userid"]
+                "lastname" => $remote_data["lastname"]
             ];
 
             // Ellenőrizzük, hogy a user létezik-e már a rendszerben
@@ -63,14 +63,20 @@ class RemoteUserAuthentication extends AuthenticationInterface
             $user = RemoteUser::getUserByUsername($user_data["username"]);
             if(!$user->isValid()) {
                 // Ha új, user létre kell hozni
-                $user = new RemoteUser($user_data);
+                $user = new User($user_data);
+                ConnectionManager::persist($user);
+                $remoteUserData = new RemoteUserData([
+                    "user_id" => $user["user_id"],
+                    "external_id" => $remote_data["userid"],
+                    "last_login" => date('Y-m-d H:i:s')
+                ]);
+                ConnectionManager::persist($remoteUserData);
             }
             else {
                 // Ha létezik, frissítjük a létező user adatait
                 $user->setAll($user_data);
+                $user->setLastLogin(date('Y-m-d H:i:s'));
             }
-
-            ConnectionManager::persist($user);
             return new AuthenticationTaskResult(true, $user);
         }
         // Ha sikertelen
