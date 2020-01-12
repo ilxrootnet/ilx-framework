@@ -19,6 +19,7 @@ use Ilx\Module\Security\Model\UserRole;
 use InvalidArgumentException;
 use Kodiak\Security\Hook\FirewallHook;
 use Kodiak\Security\Hook\PandabaseAccessManagerHook;
+use Kodiak\Security\Hook\SessionRouterHook;
 use Kodiak\Security\Model\Authentication\AuthenticationMode;
 use Kodiak\ServiceProvider\SecurityProvider\SecurityProvider;
 use PandaBase\Connection\ConnectionManager;
@@ -157,7 +158,7 @@ class SecurityModule extends IlxModule
                 Configuration::NOT_ROUTER_HOOK
             ],
             [
-                "\Kodiak\Security\Hook\SessionRouterHook::class",
+                SessionRouterHook::class,
                 Configuration::ROUTER_HOOK
             ]
 
