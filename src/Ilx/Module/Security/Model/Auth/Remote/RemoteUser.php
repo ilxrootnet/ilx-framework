@@ -4,7 +4,7 @@
 namespace Ilx\Module\Security\Model\Auth\Remote;
 
 
-use Ilx\Module\Security\Model\Auth\User;
+use Ilx\Module\Security\Model\User;
 use PandaBase\Connection\ConnectionManager;
 
 class RemoteUser extends User

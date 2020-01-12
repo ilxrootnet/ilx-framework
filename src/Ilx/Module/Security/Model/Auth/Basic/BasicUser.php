@@ -4,7 +4,7 @@
 namespace Ilx\Module\Security\Model\Auth\Basic;
 
 
-use Ilx\Module\Security\Model\Auth\User;
+use Ilx\Module\Security\Model\User;
 use PandaBase\Connection\ConnectionManager;
 use PandaBase\Exception\AccessDeniedException;
 
