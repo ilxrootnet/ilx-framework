@@ -59,8 +59,8 @@ class RemoteUserAuthentication extends AuthenticationInterface
             ];
 
             // Ellenőrizzük, hogy a user létezik-e már a rendszerben
-            /** @var RemoteUser $user */
-            $user = RemoteUser::getUserByUsername($user_data["username"]);
+            /** @var User $user */
+            $user = User::getUserByUsername($user_data["username"]);
             if(!$user->isValid()) {
                 // Ha új, user létre kell hozni
                 $user = new User($user_data);
@@ -75,7 +75,10 @@ class RemoteUserAuthentication extends AuthenticationInterface
             else {
                 // Ha létezik, frissítjük a létező user adatait
                 $user->setAll($user_data);
-                $user->setLastLogin(date('Y-m-d H:i:s'));
+                ConnectionManager::persist($user);
+                $remoteUser = RemoteUserData::fromUserId($user["user_id"]);
+                $remoteUser["last_login"] = date('Y-m-d H:i:s');
+                ConnectionManager::persist($remoteUser);
             }
             return new AuthenticationTaskResult(true, $user);
         }
