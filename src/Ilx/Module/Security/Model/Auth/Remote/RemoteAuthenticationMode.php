@@ -4,6 +4,7 @@
 namespace Ilx\Module\Security\Model\Auth\Remote;
 
 
+use Ilx\Module\Security\Model\User;
 use Ilx\Module\Security\SecurityModule;
 use Kodiak\Security\Model\Authentication\AuthenticationMode;
 use Kodiak\Security\Model\User\Role;
@@ -20,7 +21,7 @@ class RemoteAuthenticationMode extends AuthenticationMode
 
     public function userClass()
     {
-        return RemoteUser::class;
+        return User::class;
     }
 
     public function getAuthenticationInterface()
