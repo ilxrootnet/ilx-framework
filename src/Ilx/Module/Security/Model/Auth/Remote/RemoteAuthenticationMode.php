@@ -50,7 +50,7 @@ class RemoteAuthenticationMode extends AuthenticationMode
          * Remote auth specifikus osztályok kerülnek ide
          */
         return [
-            RemoteUser::class  => [
+            RemoteUserData::class  => [
                 Table::TABLE_NAME => "auth_remote",
                 Table::TABLE_ID   => "remote_auth_id",
                 Table::FIELDS     => [
