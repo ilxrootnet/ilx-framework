@@ -25,6 +25,8 @@
         "monolog/monolog": "2.0.0",
         "swiftmailer/swiftmailer": "v6.2.1",
         "ulrichsg/getopt-php": "3.2.*",
+        "wikimedia/less.php": "1.8.1",
+        "matthiasmullie/minify": "1.3.63",
         "ext-json": "*",
         "ext-pdo": "*",
         "ext-openssl": "*",

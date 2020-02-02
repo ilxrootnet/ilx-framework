@@ -27,19 +27,27 @@ class ResourceModule extends IlxModule
 
 
     function addViewPath($path, $module_name, $copy_type, $overwrite) {
-        $this->resources["views"][] = new ResourcePath($path, $module_name, $copy_type, $overwrite);
+        $this->resources["views"][] = new ResourcePath($path, $module_name, $copy_type, $overwrite, true);
     }
 
-    function addCssPath($path, $module_name, $copy_type, $overwrite) {
+    /*function addCssPath($path, $module_name, $copy_type, $overwrite) {
         $this->resources["css"][] = new ResourcePath($path, $module_name, $copy_type, $overwrite);
+    }*/
+
+    function addCssFilePath($path, $module_name, $copy_type, $overwrite) {
+        $this->resources["css"][] = new ResourcePath($path, $module_name, $copy_type, $overwrite, false);
     }
 
-    function addJsPath($path, $module_name, $copy_type, $overwrite) {
+    /*function addJsPath($path, $module_name, $copy_type, $overwrite) {
         $this->resources["js"][] = new ResourcePath($path, $module_name, $copy_type, $overwrite);
+    }*/
+
+    function addJsFilePath($path, $module_name, $copy_type, $overwrite) {
+        $this->resources["js"][] = new ResourcePath($path, $module_name, $copy_type, $overwrite, false);
     }
 
     function addImagesPath($path, $module_name, $copy_type, $overwrite) {
-        $this->resources["images"][] = new ResourcePath($path, $module_name, $copy_type, $overwrite);
+        $this->resources["images"][] = new ResourcePath($path, $module_name, $copy_type, $overwrite, true);
     }
 
 
@@ -118,7 +126,12 @@ class ResourceModule extends IlxModule
 
             if(!file_exists($module_dst) || $resource->isOverwrite()) {
                 print("\t\tCopying (type=".$resource->getCopyType().") from ".$resource->getPath()."\n");
-                self::recursive_copy($resource->getPath(), $module_dst, $resource->getCopyType());
+                if($resource->isDirectory()) {
+                    self::recursive_copy($resource->getPath(), $module_dst, $resource->getCopyType());
+                }
+                else {
+                    self::file_copy($resource->getPath(), $module_dst, $resource->getCopyType());
+                }
             }
             else {
                 print("\t\tSkipped existing path: ".$resource->getPath()."\n");
@@ -156,6 +169,16 @@ class ResourceModule extends IlxModule
             }
         }
         closedir($dir);
+    }
+
+    private static function file_copy($src, $dst_path, $copy_type) {
+        $dst = $dst_path . pathinfo($src)["basename"];
+        if($copy_type == ResourcePath::SOFT_COPY) {
+            @symlink($src, $dst);
+        }
+        else {
+            copy($src, $dst);
+        }
     }
 }
 

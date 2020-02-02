@@ -30,18 +30,25 @@ class ResourcePath
     private $overwrite;
 
     /**
+     * @var boolean
+     */
+    private $is_dir;
+
+    /**
      * Resource constructor.
      * @param string $path
      * @param string $module_name
      * @param string $copy
      * @param bool $overwrite
+     * @param bool $is_dir
      */
-    public function __construct(string $path, ?string $module_name, string $copy, bool $overwrite)
+    public function __construct(string $path, ?string $module_name, string $copy, bool $overwrite, bool $is_dir)
     {
         $this->path = $path;
         $this->module_name = $module_name;
         $this->copy_type = $copy;
         $this->overwrite = $overwrite;
+        $this->is_dir = $is_dir;
     }
 
     /**
@@ -76,5 +83,11 @@ class ResourcePath
         return $this->overwrite;
     }
 
-
+    /**
+     * @return bool
+     */
+    public function isDirectory(): bool
+    {
+        return $this->is_dir;
+    }
 }

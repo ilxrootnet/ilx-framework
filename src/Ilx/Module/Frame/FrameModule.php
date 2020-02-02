@@ -158,7 +158,7 @@ class FrameModule extends IlxModule
         // A fájlok másolását a Twig modulon keresztül a resource modul végzi, így itt nincs tennivaló.
     }
 
-    public function addStyleSheet($theme_name, $stylesheet_path, $link=false, $overwrite = false) {
+    /*public function addStyleSheet($theme_name, $stylesheet_path, $link=false, $overwrite = false) {
 
         $css_files = self::iterateOnDir($stylesheet_path, null);
         $this->parameters[FrameModule::STYLESHEETS][$theme_name] = [];
@@ -172,7 +172,7 @@ class FrameModule extends IlxModule
                 $css_file;
         }
 
-        /** @var ResourceModule $resource_module */
+        /** @var ResourceModule $resource_module */ /*
         $resource_module = ModuleManager::get("Resource");
         $resource_module->addCssPath($stylesheet_path,
             $theme_name,
@@ -196,13 +196,13 @@ class FrameModule extends IlxModule
         }
 
 
-        /** @var ResourceModule $resource_module */
+        /** @var ResourceModule $resource_module *//*
         $resource_module = ModuleManager::get("Resource");
         $resource_module->addJsPath($javascript_path,
             $theme_name,
             $link ? ResourcePath::SOFT_COPY : ResourcePath::HARD_COPY,
             $overwrite);
-    }
+    }*/
 
     public function addImages($theme_name, $images_path, $link = false, $overwrite = false) {
         $images_files = self::iterateOnDir($images_path, null);
@@ -250,11 +250,8 @@ class FrameModule extends IlxModule
         # View-k regisztrálása
         /** @var TwigModule $twig_module */
         $twig_module = $module_manager::get("Twig");
-        $twig_module->addTemplatePath($theme->getViewPath(),
-            $theme->getName(),
-            false,
-            false);
-        # a frame-eket még regisztrálni kell, mint új frame.
+        $twig_module->addTemplatePath($theme->getViewPath(), $theme->getName(), false, false);
+        # A frame-eket még regisztrálni kell, mint új frame.
         foreach ($theme->getFramesPath() as $frame_name => $frame_path) {
             $this->parameters[FrameModule::FRAMES][$frame_name] = $theme->getName();
             $twig_module->setFrame($frame_name, $theme->getName().DIRECTORY_SEPARATOR.$frame_path);
@@ -265,8 +262,18 @@ class FrameModule extends IlxModule
             $this->auth_theme_class_name = get_class($theme);
         }
 
-        $this->addStyleSheet($theme->getName(), $theme->getCssPath(), false, $overwrite);
-        $this->addJavascript($theme->getName(), $theme->getJsPath(), false, $overwrite);
+
+        // Javascript fájlok beállítása
+        /** @var ResourceModule $resource_module */
+        $resource_module = ModuleManager::get("Resource");
+        $resource_module->addJsFilePath($theme->getMinifiedJsPath(), $theme_name, ResourcePath::HARD_COPY, $overwrite);
+        $this->parameters[FrameModule::JAVASCRIPTS][$theme_name][] = Ilx::jsPath(true).DIRECTORY_SEPARATOR.$theme_name.$theme->getMinifiedJsPath();
+
+        // Css fájlok beállítása
+        $resource_module->addCssFilePath($theme->getMinifiedCssPath(), $theme_name, ResourcePath::HARD_COPY, $overwrite);
+        $this->parameters[FrameModule::STYLESHEETS][$theme_name][] = Ilx::cssPath(true).DIRECTORY_SEPARATOR.$theme_name.$theme->getMinifiedCssPath();
+
+        // Kép fájlok beállítása
         $this->addImages($theme->getName(), $theme->getImagesPath(), false, $overwrite);
     }
 
