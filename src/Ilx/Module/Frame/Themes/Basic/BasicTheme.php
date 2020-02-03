@@ -46,4 +46,29 @@ class BasicTheme extends Theme
     {
         return "basic_auth";
     }
+
+    /**
+     * Visszaadja a javascript fájlok tömbjét, amikből a minified javascript készül.
+     *
+     * @return array
+     */
+    public function getJsFiles()
+    {
+        return [
+            $this->getSourcePath()."js/0_jquery-3.4.1.min.js",
+            $this->getSourcePath()."js/bootstrap.bundle.min.js",
+        ];
+    }
+
+    /**
+     * Visszaadja a css és/vagy less fájlok tömbjét, amikből a minified css készül.
+     *
+     * @return array
+     */
+    public function getStyleFiles()
+    {
+        return [
+            $this->getSourcePath()."js/bootstrap.min.css",
+        ];
+    }
 }

@@ -130,7 +130,7 @@ class ResourceModule extends IlxModule
                     self::recursive_copy($resource->getPath(), $module_dst, $resource->getCopyType());
                 }
                 else {
-                    self::file_copy($resource->getPath(), $module_dst, $resource->getCopyType());
+                    self::file_copy($resource->getPath(), $dst, $resource->getCopyType());
                 }
             }
             else {
@@ -172,7 +172,7 @@ class ResourceModule extends IlxModule
     }
 
     private static function file_copy($src, $dst_path, $copy_type) {
-        $dst = $dst_path . pathinfo($src)["basename"];
+        $dst = $dst_path. DIRECTORY_SEPARATOR . pathinfo($src)["basename"];
         if($copy_type == ResourcePath::SOFT_COPY) {
             @symlink($src, $dst);
         }

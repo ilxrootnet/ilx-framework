@@ -30,8 +30,7 @@ class FrameModule extends IlxModule
     const FRAMES = "frames";
 
     static $themes_mapping = [
-        "basic" => BasicTheme::class,
-        "security" => SecurityTheme::class
+        "basic" => BasicTheme::class
     ];
 
     private $auth_theme_class_name = null;
@@ -42,8 +41,8 @@ class FrameModule extends IlxModule
             /*
              * Létező erőforrások felülírása
              *
-             * Ha igaz, az install és update fázisban is felírja a már létező erőforrásfájlokat (css, js, image fájlok).
-             * Célszerű emiatt false értéken tartani és csak indokolt esetben változtatni.
+             * Ha igaz, az install és update fázisban is felülírja a már létező erőforrásfájlokat (css, js, image fájlok).
+             * Célszerű false értéken tartani és csak indokolt esetben változtatni.
              */
             FrameModule::OVERWRITE => false,
 
@@ -56,7 +55,7 @@ class FrameModule extends IlxModule
              *
              */
             FrameModule::THEMES => [
-                "basic"
+                ["basic", "soft"]
             ],
 
             /*
@@ -136,13 +135,11 @@ class FrameModule extends IlxModule
             ]
         ]);
 
-        foreach ($this->parameters[FrameModule::THEMES] as $theme_name) {
-            $this->addTheme($theme_name, $moduleManager);
+        foreach ($this->parameters[FrameModule::THEMES] as $theme_row) {
+            $theme_name = $theme_row[0];
+            $theme_copy_type = $theme_row[1];
+            $this->addTheme($theme_name, $moduleManager, $theme_copy_type);
             print("\t- Added '$theme_name' theme\n");
-        }
-
-        if($this->auth_theme_class_name == null) {
-            print("\t- WARNING: The authentication theme has not been set.\n");
         }
 
         # default frame beállítása
@@ -204,6 +201,13 @@ class FrameModule extends IlxModule
             $overwrite);
     }*/
 
+    /**
+     * Képek másolása
+     * @param $theme_name
+     * @param $images_path
+     * @param bool $link
+     * @param bool $overwrite
+     */
     public function addImages($theme_name, $images_path, $link = false, $overwrite = false) {
         $images_files = self::iterateOnDir($images_path, null);
         $this->parameters[FrameModule::IMAGES][$theme_name] = [];
@@ -227,10 +231,13 @@ class FrameModule extends IlxModule
     }
 
     /**
+     * Beregisztrálja a témát a használhatóak közé.
+     *
      * @param string $theme_name
      * @param ModuleManager $module_manager
+     * @param string $copy_type
      */
-    public function addTheme($theme_name, $module_manager) {
+    public function addTheme($theme_name, $module_manager, $copy_type) {
         $overwrite = $this->parameters[FrameModule::OVERWRITE];
 
         /*
@@ -266,11 +273,11 @@ class FrameModule extends IlxModule
         // Javascript fájlok beállítása
         /** @var ResourceModule $resource_module */
         $resource_module = ModuleManager::get("Resource");
-        $resource_module->addJsFilePath($theme->getMinifiedJsPath(), $theme_name, ResourcePath::HARD_COPY, $overwrite);
+        $resource_module->addJsFilePath($theme->getMinifiedJsPath(), $theme_name, $copy_type, $overwrite);
         $this->parameters[FrameModule::JAVASCRIPTS][$theme_name][] = Ilx::jsPath(true).DIRECTORY_SEPARATOR.$theme_name.$theme->getMinifiedJsPath();
 
         // Css fájlok beállítása
-        $resource_module->addCssFilePath($theme->getMinifiedCssPath(), $theme_name, ResourcePath::HARD_COPY, $overwrite);
+        $resource_module->addCssFilePath($theme->getMinifiedCssPath(), $theme_name, $copy_type, $overwrite);
         $this->parameters[FrameModule::STYLESHEETS][$theme_name][] = Ilx::cssPath(true).DIRECTORY_SEPARATOR.$theme_name.$theme->getMinifiedCssPath();
 
         // Kép fájlok beállítása
