@@ -109,7 +109,7 @@ class ThemeModule extends IlxModule
 
             /** @var Theme $theme_ins */
             $theme_ins = new $theme_class_name();
-            $this->registerTheme($theme_ins, $moduleManager, $theme_copy_type);
+            $this->registerTheme($theme_ins, $theme_copy_type, $moduleManager);
             print("\t\t- Added '$theme_class_name' theme\n");
 
             if(in_array($default, $theme_ins->getFrameList())) {
@@ -167,7 +167,7 @@ class ThemeModule extends IlxModule
         // A Frame-k (plusz egyéb view-k) beregisztrálása a twig-be
         /** @var TwigModule $twig_module */
         $twig_module = $module_manager::get("Twig");
-        $twig_module->addTemplatePath($theme::getFramesPath(), $theme->getName(), $copy_type == ResourcePath::SOFT_COPY, $overwrite);
+        $twig_module->addTemplatePath($theme->getFramesPath(), $theme->getName(), $copy_type == ResourcePath::SOFT_COPY, $overwrite);
 
         // A frame-eket még regisztrálni kell, mint új frame.
         foreach ($theme->getFrameList() as $frame_name => $frame_path) {
@@ -189,6 +189,6 @@ class ThemeModule extends IlxModule
         }
 
         // Egyéb forrásfájlok beállítása
-        $resource_module->addResourcesPath($theme::getResourcesPath(), $theme->getName(), $copy_type, $overwrite);
+        $resource_module->addResourcesPath($theme->getResourcesPath(), $theme->getName(), $copy_type, $overwrite);
     }
 }

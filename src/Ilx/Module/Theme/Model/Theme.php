@@ -122,16 +122,16 @@ abstract class Theme
      *
      * @return string
      */
-    public static function getResourcesPath() {
-        return self::getSourcePath().DIRECTORY_SEPARATOR."resources";
+    public function getResourcesPath() {
+        return $this->getSourcePath().DIRECTORY_SEPARATOR."resources";
     }
 
     /**
      * Témához tartozó frame-k elérési útvonala.
      * @return string
      */
-    public static function getFramesPath() {
-        return self::getSourcePath().DIRECTORY_SEPARATOR."frames";
+    public function getFramesPath() {
+        return $this->getSourcePath().DIRECTORY_SEPARATOR."frames";
     }
 
     /**
@@ -139,7 +139,5 @@ abstract class Theme
      *
      * @return string
      */
-    public static function getSourcePath() {
-        return __DIR__;
-    }
+    public abstract function getSourcePath();
 }

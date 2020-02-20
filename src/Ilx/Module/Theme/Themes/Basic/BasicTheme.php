@@ -49,6 +49,12 @@ class BasicTheme extends Theme implements AuthTheme
         return [];
     }
 
+    
+    public function getSourcePath()
+    {
+        return __DIR__;
+    }
+
     /*
      * AuthTheme implementáció
      */
