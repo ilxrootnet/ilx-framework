@@ -52,6 +52,12 @@ abstract class Theme
      * @return string
      */
     public function getMinifiedJsPath() {
+
+        // Ellenőrizzük, hogy van-e js fájl
+        if(count($this->getJsFiles()) < 1) {
+            return null;
+        }
+
         // Könyvtár létrehozása
         $minified_dir = $this->getSourcePath().DIRECTORY_SEPARATOR."js";
         @mkdir($minified_dir);
@@ -70,6 +76,13 @@ abstract class Theme
      * @return string
      */
     public function getMinifiedCssPath() {
+
+        // Ellenőrizzük, hogy van-e style fájl
+        if(count($this->getStyleFiles()) < 1) {
+            return null;
+        }
+
+
         // Könyvtár létrehozás
         $minified_dir = $this->getSourcePath().DIRECTORY_SEPARATOR."css";
         @mkdir($minified_dir);

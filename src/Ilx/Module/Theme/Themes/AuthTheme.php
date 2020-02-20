@@ -31,4 +31,6 @@ interface AuthTheme
      * @return string
      */
     public function getRegistrationForm();
+
+
 }

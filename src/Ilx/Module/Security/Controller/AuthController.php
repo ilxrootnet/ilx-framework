@@ -43,6 +43,6 @@ class AuthController
         /** @var Frame $frame */
         $frame = Application::get("frame");
         $theme = $frame->getAuthenticationTheme();
-        return $twig->render($theme->getLoginForm(), [], false, $theme->getAuthenticationFrame());
+        return $twig->render($theme->getLoginForm(), [], false, $theme->getFrame());
     }
 }

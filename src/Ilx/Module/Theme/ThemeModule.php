@@ -180,25 +180,18 @@ class ThemeModule extends IlxModule
 
         /** @var ResourceModule $resource_module */
         $resource_module = ModuleManager::get("Resource");
-
         // Javascript fájlok beállítása
-        $resource_module->addJsFilePath($theme->getMinifiedJsPath(), $theme->getName(), $copy_type, $overwrite);
-
+        $min_js = $theme->getMinifiedJsPath();
+        if($min_js != null) {
+            $resource_module->addJsFilePath($min_js, $theme->getName(), $copy_type, $overwrite);
+        }
         // Css fájlok beállítása
-        $resource_module->addCssFilePath($theme->getMinifiedCssPath(), $theme->getName(), $copy_type, $overwrite);
-
+        $min_css = $theme->getMinifiedCssPath();
+        if($min_css != null) {
+            $resource_module->addCssFilePath($min_css, $theme->getName(), $copy_type, $overwrite);
+        }
+        
         // Egyéb forrásfájlok beállítása
         $resource_module->addResourcesPath($theme::getResourcesPath(), $theme->getName(), $copy_type, $overwrite);
     }
-
-    /*
-     * TODO: authTheme kezelése
-     *
-     *         // Ha egyezik a név, akkor beállítjuk auth_theme-nek
-        if($this->parameters[ThemeModule::AUTH_THEME] == $theme->getName()) {
-            $this->auth_theme_class_name = get_class($theme);
-        }
-
-     */
-
 }

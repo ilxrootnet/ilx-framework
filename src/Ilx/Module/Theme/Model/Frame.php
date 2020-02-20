@@ -5,6 +5,7 @@ namespace Ilx\Module\Theme\Model;
 
 
 
+use Ilx\Module\Theme\Themes\AuthTheme;
 use Ilx\Module\Theme\Themes\Theme;
 
 class Frame
@@ -20,30 +21,10 @@ class Frame
     private $title;
 
     /**
-     * Css fájlok listája
-     * @var array
-     */
-    private $stylesheets;
-
-    /**
-     * Js fájlok listája
-     * @var array
-     */
-    private $javascripts;
-
-
-    /**
-     * Képek listája
-     * @var array
-     */
-    private $images;
-
-    /**
      * Authentikációs téma neve.
      * @var Theme
      */
     private $auth_theme;
-
 
     /**
      * Frame név -> téma név összerendelést tartalmaz
@@ -58,10 +39,6 @@ class Frame
     public function __construct($configuration)
     {
         $this->title = $configuration["title"];
-        $this->stylesheets = isset($configuration["stylesheets"]) ? $configuration["stylesheets"] : [];
-        $this->javascripts = isset($configuration["javascripts"]) ? $configuration["javascripts"] : [];
-        $this->images = isset($configuration["images"]) ? $configuration["images"] : [];
-        $this->themes = isset($configuration["frames"]) ? $configuration["frames"] : [];
         $this->auth_theme = $configuration["auth_theme"];
     }
 
@@ -78,48 +55,9 @@ class Frame
     }
 
     /**
-     * @param string $frame
-     * @return array
+     * @return AuthTheme
      */
-    public function getStylesheets($frame = null): array
-    {
-        if($frame == null) {
-            $frame = $this->active_frame;
-        }
-        $active_theme = $this->themes[$frame];
-        return isset($this->stylesheets[$active_theme]) ? $this->stylesheets[$active_theme] : [];
-    }
-
-    /**
-     * @param string $frame
-     * @return array
-     */
-    public function getJavascripts($frame = null): array
-    {
-        if($frame == null) {
-            $frame = $this->active_frame;
-        }
-        $active_theme = $this->themes[$frame];
-        return isset($this->javascripts[$active_theme]) ? $this->javascripts[$active_theme] : [];
-    }
-
-    /**
-     * @param string $frame
-     * @return array
-     */
-    public function getImages($frame = null): array
-    {
-        if($frame == null) {
-            $frame = $this->active_frame;
-        }
-        $active_theme = $this->themes[$frame];
-        return isset($this->images[$active_theme]) ? $this->images[$active_theme] : [];
-    }
-
-    /**
-     * @return Theme
-     */
-    public function getAuthenticationTheme(): Theme
+    public function getAuthenticationTheme(): AuthTheme
     {
         $cls_name = $this->auth_theme;
         return new $cls_name();

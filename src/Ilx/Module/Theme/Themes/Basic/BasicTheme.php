@@ -4,16 +4,11 @@
 namespace Ilx\Module\Theme\Themes\Basic;
 
 
+use Ilx\Module\Theme\Themes\AuthTheme;
 use Ilx\Module\Theme\Themes\Theme;
 
-class BasicTheme extends Theme
+class BasicTheme extends Theme implements AuthTheme
 {
-
-    public function getSourcePath()
-    {
-        return __DIR__;
-    }
-
     /**
      * Téma neve.
      *
@@ -24,13 +19,38 @@ class BasicTheme extends Theme
         return "basic";
     }
 
-    public function getFramesPath()
+
+    public function getFrameList()
     {
         return [
             "basic" => "frame.twig",
             "basic_auth" => "auth/auth_frame.twig"
         ];
     }
+
+    /**
+     * Visszaadja a javascript fájlok tömbjét, amikből a minified javascript készül.
+     *
+     * @return array
+     */
+    public function getJsFiles()
+    {
+        return [];
+    }
+
+    /**
+     * Visszaadja a css és/vagy less fájlok tömbjét, amikből a minified css készül.
+     *
+     * @return array
+     */
+    public function getStyleFiles()
+    {
+        return [];
+    }
+
+    /*
+     * AuthTheme implementáció
+     */
 
     public function getLoginForm()
     {
@@ -42,33 +62,8 @@ class BasicTheme extends Theme
         return "basic/auth/registration.twig";
     }
 
-    public function getAuthenticationFrame()
+    public function getFrame()
     {
         return "basic_auth";
-    }
-
-    /**
-     * Visszaadja a javascript fájlok tömbjét, amikből a minified javascript készül.
-     *
-     * @return array
-     */
-    public function getJsFiles()
-    {
-        return [
-            $this->getSourcePath()."js/0_jquery-3.4.1.min.js",
-            $this->getSourcePath()."js/bootstrap.bundle.min.js",
-        ];
-    }
-
-    /**
-     * Visszaadja a css és/vagy less fájlok tömbjét, amikből a minified css készül.
-     *
-     * @return array
-     */
-    public function getStyleFiles()
-    {
-        return [
-            $this->getSourcePath()."js/bootstrap.min.css",
-        ];
     }
 }
