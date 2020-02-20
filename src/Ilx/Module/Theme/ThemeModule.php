@@ -3,15 +3,12 @@
 
 namespace Ilx\Module\Theme;
 
-use Ilx\Ilx;
-use Ilx\Module\Theme\Model\Frame;
+use Ilx\Module\Theme\Model\Theme;
 use Ilx\Module\Theme\Themes\Basic\BasicTheme;
-use Ilx\Module\Theme\Themes\Theme;
 use Ilx\Module\IlxModule;
 use Ilx\Module\ModuleManager;
 use Ilx\Module\Resource\ResourceModule;
 use Ilx\Module\Resource\ResourcePath;
-use Ilx\Module\Security\Frame\SecurityTheme;
 use Ilx\Module\Twig\TwigModule;
 
 class ThemeModule extends IlxModule
@@ -190,7 +187,7 @@ class ThemeModule extends IlxModule
         if($min_css != null) {
             $resource_module->addCssFilePath($min_css, $theme->getName(), $copy_type, $overwrite);
         }
-        
+
         // Egyéb forrásfájlok beállítása
         $resource_module->addResourcesPath($theme::getResourcesPath(), $theme->getName(), $copy_type, $overwrite);
     }

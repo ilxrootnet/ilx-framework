@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Ilx\Module\Theme\Themes;
+namespace Ilx\Module\Theme\Model;
 
 use Less_Parser;
 use MatthiasMullie\Minify\CSS;

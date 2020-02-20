@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Ilx\Module\Theme\Themes;
+namespace Ilx\Module\Theme\Model;
 
 /**
  * Interface AuthTheme

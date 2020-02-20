@@ -5,9 +5,6 @@ namespace Ilx\Module\Theme\Model;
 
 
 
-use Ilx\Module\Theme\Themes\AuthTheme;
-use Ilx\Module\Theme\Themes\Theme;
-
 class Frame
 {
     /**
@@ -26,11 +23,6 @@ class Frame
      */
     private $auth_theme;
 
-    /**
-     * Frame név -> téma név összerendelést tartalmaz
-     * @var array
-     */
-    private $themes;
 
     /**
      * Frame constructor.

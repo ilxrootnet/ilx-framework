@@ -4,8 +4,9 @@
 namespace Ilx\Module\Theme\Themes\Basic;
 
 
-use Ilx\Module\Theme\Themes\AuthTheme;
-use Ilx\Module\Theme\Themes\Theme;
+
+use Ilx\Module\Theme\Model\AuthTheme;
+use Ilx\Module\Theme\Model\Theme;
 
 class BasicTheme extends Theme implements AuthTheme
 {
