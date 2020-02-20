@@ -166,16 +166,16 @@ class Ilx
     }
 
     /**
-     * Kép fájlokat tartalmazó könyvtár elérési útvonala.
+     * Az egyéb forrásfájlokat tartalmazó könyvtár elérési útvonala.
      *
      * @param bool $relative
      * @return string
      */
-    public static function imagesPath($relative = false) {
+    public static function resourcesPath($relative = false) {
         if($relative) {
-            return DIRECTORY_SEPARATOR."images";
+            return DIRECTORY_SEPARATOR."resources";
         }
-        return self::webPath().DIRECTORY_SEPARATOR."images";
+        return self::webPath().DIRECTORY_SEPARATOR."resources";
     }
 
     /**

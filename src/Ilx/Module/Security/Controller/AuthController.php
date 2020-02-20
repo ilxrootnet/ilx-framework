@@ -4,7 +4,7 @@
 namespace Ilx\Module\Security\Controller;
 
 
-use Ilx\Module\Frame\Model\Frame;
+use Ilx\Module\Theme\Model\Frame;
 use Kodiak\Application;
 use Kodiak\Request\RESTRequest;
 use Kodiak\Response\RESTResponse;

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Ilx\Module\Frame\Themes;
+namespace Ilx\Module\Theme\Themes;
 
 use Less_Parser;
 use MatthiasMullie\Minify\CSS;
@@ -10,14 +10,8 @@ use MatthiasMullie\Minify\JS;
 /**
  * Class Theme
  *
- * Egy stílus téma definiálja, hogy:
- *  - view-kat
- *  - view-khoz tartozó css, js, images fájlokat
- *  - frame-ket (frame név => view relatív útvonal)
+ * Definiálja a téma definíció
  *
- * Megjegyzés:
- * Egy stílus témán belül, mindegyik frame-be ugyanazt a js,css és images fájlokat tölti a be a rendszer. Ha ezeket
- * külön szeretnénk kezelni, akkor külön stílust kell definiálni.
  *
  * @package Ilx\Module\Frame\Themes
  */
@@ -30,41 +24,14 @@ abstract class Theme
      */
     public abstract function getName();
 
-    /**
-     * A téma forrásfájljait tartalmazó mappa útvonala.
-     *
-     * @return string
-     */
-    public abstract function getSourcePath();
 
     /**
      * Visszadja a frame-k tömbjét:
-     *  frame_name => view relatív path
+     *  frame_name => relatív útvonal a frames mappán belül
      *
      * @return array[]
      */
-    public abstract function getFramesPath();
-
-    /**
-     * Visszadja a témához tartozó authentikációs frame twig relatív útvonalát.
-     *
-     * @return string
-     */
-    public abstract function getAuthenticationFrame();
-
-
-    /**
-     * login.twig relatív útvonala.
-     *
-     * @return string
-     */
-    public abstract function getLoginForm();
-
-    /**
-     * registration.twig relatív útvonala.
-     * @return mixed
-     */
-    public abstract function getRegistrationForm();
+    public abstract function getFrameList();
 
     /**
      * Visszaadja a javascript fájlok tömbjét, amikből a minified javascript készül.
@@ -73,22 +40,12 @@ abstract class Theme
      */
     public abstract function getJsFiles();
 
-
     /**
      * Visszaadja a css és/vagy less fájlok tömbjét, amikből a minified css készül.
      *
      * @return array
      */
     public abstract function getStyleFiles();
-
-
-    /**
-     * View útvonal
-     * @return string
-     */
-    public function getViewPath() {
-        return $this->getSourcePath().DIRECTORY_SEPARATOR."views";
-    }
 
     /**
      * Minified js útvonal
@@ -148,10 +105,28 @@ abstract class Theme
     }
 
     /**
-     * Images útvonal
+     * Témához tartozó egyéb forrásfájlok elérési útvonala.
+     *
      * @return string
      */
-    public function getImagesPath() {
-        return $this->getSourcePath().DIRECTORY_SEPARATOR."images";
+    public static function getResourcesPath() {
+        return self::getSourcePath().DIRECTORY_SEPARATOR."resources";
+    }
+
+    /**
+     * Témához tartozó frame-k elérési útvonala.
+     * @return string
+     */
+    public static function getFramesPath() {
+        return self::getSourcePath().DIRECTORY_SEPARATOR."frames";
+    }
+
+    /**
+     * A téma forrásfájljait tartalmazó mappa útvonala.
+     *
+     * @return string
+     */
+    public static function getSourcePath() {
+        return __DIR__;
     }
 }

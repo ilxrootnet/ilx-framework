@@ -9,7 +9,7 @@ use Basil\DataSource\NestedSetSource;
 use Basil\Tree;
 use Ilx\Configuration;
 use Ilx\Module\Database\DatabaseModule;
-use Ilx\Module\Frame\FrameModule;
+use Ilx\Module\Theme\ThemeModule;
 use Ilx\Module\IlxModule;
 use Ilx\Module\ModuleManager;
 use Ilx\Module\Security\Controller\AuthController;
@@ -173,7 +173,7 @@ class SecurityModule extends IlxModule
          * Ha létezik definiált FrameModule akkor hozzáadjuk a Security scripteket.
          */
         try {
-            /** @var FrameModule $frame_module */
+            /** @var ThemeModule $frame_module */
             $frame_module = $moduleManager::get("Frame");
             $frame_module->addTheme("security", ModuleManager::getInstance());
             print("\tAdded SecurityTheme to FrameModule.\n");
@@ -327,5 +327,9 @@ class SecurityModule extends IlxModule
             default:
                 throw new \InvalidArgumentException("Unknown authentication mode name: $name");
         }
+    }
+
+    public static function getAuthJsPath() {
+        return __DIR__.DIRECTORY_SEPARATOR.'Frame'.DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'auth.js';
     }
 }

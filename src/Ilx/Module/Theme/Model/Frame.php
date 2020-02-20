@@ -1,11 +1,11 @@
 <?php
 
 
-namespace Ilx\Module\Frame\Model;
+namespace Ilx\Module\Theme\Model;
 
 
 
-use Ilx\Module\Frame\Themes\Theme;
+use Ilx\Module\Theme\Themes\Theme;
 
 class Frame
 {

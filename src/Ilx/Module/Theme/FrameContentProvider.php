@@ -1,10 +1,17 @@
 <?php
 
 
-namespace Ilx\Module\Frame;
+/**
+ * @deprecated
+ * TODO: Erre valószínűleg nem lesz szükség a jövőben és hamarosan töröljük.
+ *
+ *
+ */
+
+namespace Ilx\Module\Theme;
 
 
-use Ilx\Module\Frame\Model\Frame;
+use Ilx\Module\Theme\Model\Frame;
 use Kodiak\Application;
 use Kodiak\ServiceProvider\TwigProvider\ContentProvider\ContentProvider;
 

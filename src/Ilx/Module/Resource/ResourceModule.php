@@ -21,7 +21,7 @@ class ResourceModule extends IlxModule
     private $resources = [
         "css"   => [],
         "js"    => [],
-        "images"=> [],
+        "resources" => [],
         "views" => []
     ];
 
@@ -46,8 +46,8 @@ class ResourceModule extends IlxModule
         $this->resources["js"][] = new ResourcePath($path, $module_name, $copy_type, $overwrite, false);
     }
 
-    function addImagesPath($path, $module_name, $copy_type, $overwrite) {
-        $this->resources["images"][] = new ResourcePath($path, $module_name, $copy_type, $overwrite, true);
+    function addResourcesPath($path, $module_name, $copy_type, $overwrite) {
+        $this->resources["resources"][] = new ResourcePath($path, $module_name, $copy_type, $overwrite, true);
     }
 
 
@@ -92,7 +92,7 @@ class ResourceModule extends IlxModule
             @mkdir(Ilx::viewPath());
             @mkdir(Ilx::cssPath());
             @mkdir(Ilx::jsPath());
-            @mkdir(Ilx::imagesPath());
+            @mkdir(Ilx::resourcesPath());
 
             print("\tCopying twig files ...\n");
             ResourceModule::copyResources($this->resources["views"], Ilx::viewPath());
@@ -100,8 +100,8 @@ class ResourceModule extends IlxModule
             ResourceModule::copyResources($this->resources["css"], Ilx::cssPath());
             print("\tCopying js files...\n");
             ResourceModule::copyResources($this->resources["js"], Ilx::jsPath());
-            print("\tCopying image files...\n");
-            ResourceModule::copyResources($this->resources["images"], Ilx::imagesPath());
+            print("\tCopying resources files...\n");
+            ResourceModule::copyResources($this->resources["images"], Ilx::resourcesPath());
             print("\tCreating web directory...\n");
             ResourceModule::recursive_copy(__DIR__.DIRECTORY_SEPARATOR."Templates", Ilx::webPath(), ResourcePath::HARD_COPY);
         }

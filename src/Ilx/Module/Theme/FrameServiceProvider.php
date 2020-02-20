@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Ilx\Module\Frame;
+namespace Ilx\Module\Theme;
 
 
-use Ilx\Module\Frame\Model\Frame;
+use Ilx\Module\Theme\Model\Frame;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 

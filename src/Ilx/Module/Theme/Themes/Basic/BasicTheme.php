@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Ilx\Module\Frame\Themes\Basic;
+namespace Ilx\Module\Theme\Themes\Basic;
 
 
-use Ilx\Module\Frame\Themes\Theme;
+use Ilx\Module\Theme\Themes\Theme;
 
 class BasicTheme extends Theme
 {
