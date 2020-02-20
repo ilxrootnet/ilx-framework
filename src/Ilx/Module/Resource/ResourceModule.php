@@ -101,7 +101,7 @@ class ResourceModule extends IlxModule
             print("\tCopying js files...\n");
             ResourceModule::copyResources($this->resources["js"], Ilx::jsPath());
             print("\tCopying resources files...\n");
-            ResourceModule::copyResources($this->resources["images"], Ilx::resourcesPath());
+            ResourceModule::copyResources($this->resources["resources"], Ilx::resourcesPath());
             print("\tCreating web directory...\n");
             ResourceModule::recursive_copy(__DIR__.DIRECTORY_SEPARATOR."Templates", Ilx::webPath(), ResourcePath::HARD_COPY);
         }
