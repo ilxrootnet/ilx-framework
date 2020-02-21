@@ -96,7 +96,9 @@ abstract class Theme
                     $parser = new Less_Parser();
                     $parser->parseFile($styles[$i]);
                     $css = $parser->getCss();
-                    file_put_contents(substr($styles[$i], 0, -4)."css", $css);
+                    $css_path = substr($styles[$i], 0, -4)."css";
+                    file_put_contents($css_path, $css);
+                    $css_files[] = $css_path;
 
                 }catch(\Exception $e){
                     print("\t\t[ERROR] An error occured during the parse of less file: $styles[$i] . Error message: ". $e->getMessage());
