@@ -112,7 +112,7 @@ class ThemeModule extends IlxModule
             $this->registerTheme($theme_ins, $theme_copy_type, $moduleManager);
             print("\t\t- Added '$theme_class_name' theme\n");
 
-            if(in_array($default, $theme_ins->getFrameList())) {
+            if(in_array($default, array_keys($theme_ins->getFrameList()))) {
                 $default_frame_path = $theme_ins->getName().DIRECTORY_SEPARATOR.$theme_ins->getFrameList()[$default];
             }
         }
