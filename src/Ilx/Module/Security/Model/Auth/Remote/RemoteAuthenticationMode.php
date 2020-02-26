@@ -10,7 +10,17 @@ use Kodiak\Security\Model\Authentication\AuthenticationMode;
 use Kodiak\Security\Model\User\Role;
 use PandaBase\Connection\Scheme\Table;
 
-
+/**
+ * Class RemoteAuthenticationMode
+ *
+ *
+ * Paraméterek
+ *  - url: End-point ahonnan elérhető a távoli authentikáció
+ *  - http_method: HTTP method
+ *  - token: Biztonsági token, ami a HTTP headerben utazik
+ *
+ * @package Ilx\Module\Security\Model\Auth\Remote
+ */
 class RemoteAuthenticationMode extends AuthenticationMode
 {
 

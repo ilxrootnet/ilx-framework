@@ -4,11 +4,19 @@
 namespace Ilx\Module\Security\Model\Auth\Basic;
 
 
-use Ilx\Module\Security\Model\Auth\Remote\RemoteAuthController;
 use Ilx\Module\Security\SecurityModule;
 use Kodiak\Security\Model\Authentication\AuthenticationMode;
 use PandaBase\Connection\Scheme\Table;
 
+/**
+ * Class BasicAuthenticationMode
+ *
+ * Paraméterek:
+ *  - max_failed_login_count: Hány hibás bejelentkezés engedélyezett
+ *  - mi legyen a lock out time?
+ *
+ * @package Ilx\Module\Security\Model\Auth\Basic
+ */
 class BasicAuthenticationMode extends AuthenticationMode
 {
 
@@ -19,7 +27,7 @@ class BasicAuthenticationMode extends AuthenticationMode
 
     public function userClass()
     {
-        return BasicUser::class;
+        return BasicUserData::class;
     }
 
     public function getAuthenticationInterface()
@@ -66,38 +74,21 @@ class BasicAuthenticationMode extends AuthenticationMode
     public function tables()
     {
         return [
-            // TODO: kiszervezni egy userbe a közös dolgokat. Az authra egyedi dolgok mehetnek küéön táblákba
-            // BasicUsernek nem lesz táblája, őt csak örököl a User-ből
-            BasicUser::class  => [
-                Table::TABLE_NAME => "users",
-                Table::TABLE_ID   => "user_id",
+            BasicUserData::class  => [
+                Table::TABLE_NAME => "auth_basic",
+                Table::TABLE_ID   => "basic_auth_id",
                 Table::FIELDS     => [
-                    "user_id"               => "int(10) unsigned NOT NULL AUTO_INCREMENT",
-                    "username"              => "varchar(200) DEFAULT NULL",
-                    "email"                 => "varchar(200) NOT NULL",
-                    "name_prefix"           => "varchar(20) DEFAULT NULL",
-                    "firstname"             => "varchar(256) DEFAULT NULL",
-                    "lastname"              => "varchar(256) DEFAULT NULL",
-                    "status_id"             => "int(1) DEFAULT NULL",
+                    "basic_auth_id"         => "int(10) unsigned NOT NULL AUTO_INCREMENT",
+                    "user_id"               => "int(10) unsigned NOT NULL",
                     "password"              => "varchar(256) DEFAULT NULL",
                     "password_expire"       => "datetime DEFAULT NULL",
                     "last_login"            => "datetime DEFAULT NULL ",
                     "reset_token"           => "varchar(200) DEFAULT NULL",
                     "failed_login_count"    => "int(10) NOT NULL DEFAULT '0'"
-
                 ],
-                Table::PRIMARY_KEY => ["user_id"]
+                Table::PRIMARY_KEY => ["basic_auth_id"]
             ],
-            FailedLoginCount::class  => [
-                Table::TABLE_NAME => "auth_basic_failed_log_count",
-                Table::TABLE_ID   => "user_id",
-                Table::FIELDS     => [
-                    "user_id"               => "int(10) unsigned NOT NULL",
-                    "failed_login_count"    => "int(10) NOT NULL DEFAULT '0'"
-
-                ],
-                Table::PRIMARY_KEY => ["user_id"]
-            ],
+            // TODO: Password history
         ];
     }
 

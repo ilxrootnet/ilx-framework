@@ -32,6 +32,7 @@ class RemoteAuthController
      *
      * @param $params
      * @return JsonResponse
+     * @throws \Kodiak\Exception\Http\HttpInternalServerErrorException
      */
     public function login($params) {
         try {

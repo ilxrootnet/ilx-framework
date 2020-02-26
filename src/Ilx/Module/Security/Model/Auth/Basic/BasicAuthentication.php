@@ -4,9 +4,9 @@
 namespace Ilx\Module\Security\Model\Auth\Basic;
 
 
+use Ilx\Module\Security\Model\User;
 use Kodiak\Security\Model\Authentication\AuthenticationInterface;
 use Kodiak\Security\Model\Authentication\AuthenticationTaskResult;
-use Kodiak\Security\Model\User\AuthenticatedUserInterface;
 use PandaBase\Exception\AccessDeniedException;
 
 class BasicAuthentication extends AuthenticationInterface
@@ -16,30 +16,40 @@ class BasicAuthentication extends AuthenticationInterface
      * @param array $credentials
      * @return AuthenticationTaskResult
      * @throws AccessDeniedException
+     * @throws \Exception
      */
     public function login(array $credentials): AuthenticationTaskResult
     {
+        $configuration = $this->getConfiguration();
 
         $username = $credentials["username"];
         $passwordCandidate = $credentials["password"];
-        /** @var BasicUser $userCandidate */
-        $userCandidate = BasicUser::getUserByUsername($username);
+
+        // Ellenőrizzük, hogy a user létezik-e már a rendszerben
+        /** @var User $userCandidate */
+        $userCandidate = User::getUserByUsername($username);
+
 
         // If the username doesnt exist, we stop the auth process with error.
         if(!$userCandidate->isValidUsername()) {
             return new AuthenticationTaskResult(false, null);
         }
 
+        // BasicUserData betöltése
+        $basicUser = BasicUserData::fromUserId($userCandidate["user_id"]);
+
         // Check password
-        if(!$this->checkPbkdf2($userCandidate,$passwordCandidate)) {
-            $userCandidate->increaseFailedLoginCounter();
+        if(!$this->checkPbkdf2ByPassword($basicUser->getHashedPassword(), $passwordCandidate)) {
+            // Ha nem volt megfelelő a jelszó növeljük a login countert.
+            $basicUser->increaseFailedLoginCounter(true);
             return new AuthenticationTaskResult(false, 'PASSWORD_ERROR');
         }
 
-        // TODO: innen kell folytatni
-
         // Check lockout
-        if ($userCandidate->isLockedOut()) {
+        if (intval($configuration["max_failed_login_count"]) <= $basicUser->getFailedLoginCount()) {
+
+            // TODO: innen kell folytatni a lock out time-mal
+
             return new AuthenticationTaskResult(false, 'USER_LOCKED');
         }
 
