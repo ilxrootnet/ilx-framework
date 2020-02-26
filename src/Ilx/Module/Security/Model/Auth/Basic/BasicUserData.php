@@ -4,6 +4,7 @@
 namespace Ilx\Module\Security\Model\Auth\Basic;
 
 
+use Exception;
 use Ilx\Module\Security\Model\Auth\Remote\RemoteUserData;
 use PandaBase\Connection\ConnectionManager;
 use PandaBase\Exception\AccessDeniedException;
@@ -49,6 +50,29 @@ class BasicUserData extends SimpleRecord
      */
     public function getLastPasswordChangeDate() {
         return true;
+    }
+
+    /**
+     * Igaz, ha a lock out idő még nem járt le. Amúgy hamis.
+     *
+     * @param int $lock_out_time_in_secs
+     * @return bool
+     * @throws AccessDeniedException
+     */
+    public function isLockedOut($lock_out_time_in_secs) {
+        // Ha a last login attempt időn belül van
+        return (time() - strtotime($this["last_login_attempt"])) <= $lock_out_time_in_secs;
+    }
+
+    /**
+     * Kizárja a usert a rendszerből.
+     *
+     * @throws Exception
+     * @throws AccessDeniedException
+     */
+    public function setToLockedOut() {
+        $this->set("last_login_attempt", date("Y-m-d H:i:s"));
+        ConnectionManager::persist($this);
     }
 
 

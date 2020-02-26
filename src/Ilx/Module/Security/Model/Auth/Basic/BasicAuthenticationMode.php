@@ -13,7 +13,9 @@ use PandaBase\Connection\Scheme\Table;
  *
  * Paraméterek:
  *  - max_failed_login_count: Hány hibás bejelentkezés engedélyezett
- *  - mi legyen a lock out time?
+ *  - lock_out_time_in_secs: Kizárási idő másodpercekben, ha max_failed_login_count alkalommal sikertelen volt a bejelentkezés
+ *  - check_password_expiration: true|false, kell-e jelszó lejáratot ellenőrizni
+ *  - password_expiration_time_in_secs: Jelszó lejárati idő másodpercekben
  *
  * @package Ilx\Module\Security\Model\Auth\Basic
  */
@@ -83,6 +85,7 @@ class BasicAuthenticationMode extends AuthenticationMode
                     "password"              => "varchar(256) DEFAULT NULL",
                     "password_expire"       => "datetime DEFAULT NULL",
                     "last_login"            => "datetime DEFAULT NULL ",
+                    "last_login_attempt"    => "datetime DEFAULT NULL ",
                     "reset_token"           => "varchar(200) DEFAULT NULL",
                     "failed_login_count"    => "int(10) NOT NULL DEFAULT '0'"
                 ],

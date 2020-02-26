@@ -38,20 +38,38 @@ class BasicAuthentication extends AuthenticationInterface
         // BasicUserData betöltése
         $basicUser = BasicUserData::fromUserId($userCandidate["user_id"]);
 
+
+        // Megnézzük, hogy ki lett-e zárva már korábban. Ha eltelt lock_out_time_in_secs, akkor ezen tovább fog lépni.
+        if($basicUser->isLockedOut($configuration["lock_out_time_in_secs"])) {
+            return new AuthenticationTaskResult(false, 'USER_LOCKED');
+        }
+
         // Check password
         if(!$this->checkPbkdf2ByPassword($basicUser->getHashedPassword(), $passwordCandidate)) {
             // Ha nem volt megfelelő a jelszó növeljük a login countert.
             $basicUser->increaseFailedLoginCounter(true);
+
+            // Ha elérte a user a max_failed_login_count próbálkozást kizárjuk
+            if (intval($configuration["max_failed_login_count"]) <= $basicUser->getFailedLoginCount()) {
+                $basicUser->setToLockedOut();
+                return new AuthenticationTaskResult(false, 'USER_LOCKED');
+            }
             return new AuthenticationTaskResult(false, 'PASSWORD_ERROR');
         }
-
-        // Check lockout
-        if (intval($configuration["max_failed_login_count"]) <= $basicUser->getFailedLoginCount()) {
-
-            // TODO: innen kell folytatni a lock out time-mal
-
-            return new AuthenticationTaskResult(false, 'USER_LOCKED');
+        // Ha eddig eljutott tudta a jelszót. A login countert visszaállítjuk ha szükséges
+        if($basicUser->getFailedLoginCount() > 0) {
+            // TODO: ha valamit később biztosan módosítunk akkor ez lehet false!
+            $basicUser->resetFailedLoginCounter(true);
         }
+
+        // TODO: Ellenőrizzük, hogy lejárt-e a jelszó
+
+        /*
+         *  - check_password_expiration: true|false, kell-e jelszó lejáratot ellenőrizni
+         *  - password_expiration_time_in_secs: Jelszó lejárati idő másodpercekben
+         */
+
+
 
         // Check password expiry
         if (!$allowExpiry) {
