@@ -34,6 +34,29 @@ class BasicUserData extends SimpleRecord
     }
 
     /**
+     * BasicUserData objektum betöltése reset_token alapján
+     *
+     * @param string $token
+     * @return BasicUserData
+     * @throws AccessDeniedException
+     */
+    public static function fromResetToken($token)
+    {
+        return new BasicUserData(ConnectionManager::fetchAssoc("SELECT * FROM auth_basic WHERE reset_token=:token", [
+            "token" => $token
+        ]));
+    }
+
+    /**
+     * Felhasználó azonosítója
+     *
+     * @return int
+     */
+    public function getUserId() {
+        return $this["user_id"];
+    }
+
+    /**
      * Visszatér a felhasználó hashelt jelszavával
      *
      * @return string
@@ -124,5 +147,16 @@ class BasicUserData extends SimpleRecord
         if($persist) {
             ConnectionManager::persist($this);
         }
+    }
+
+    public function isResetTokenExpired($expiration_time) {
+        return ($expiration_time + strtotime($this["last_password_mod"])) <= time();
+    }
+
+    public function generateResetToken() {
+        $this["reset_token"] = bin2hex(openssl_random_pseudo_bytes(32));
+        $this["reset_token_date"] = date("Y-m-d H:i:s");
+        ConnectionManager::persist($this);
+        return $this["reset_token"];
     }
 }

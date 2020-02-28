@@ -127,13 +127,100 @@ class BasicAuthentication extends AuthenticationInterface
         return new AuthenticationTaskResult(false, "Deregistration operation is forbidden.");
     }
 
+    /**
+     * @param array $credentials
+     * @return AuthenticationTaskResult
+     * @throws \Exception
+     */
     public function resetPassword(array $credentials): AuthenticationTaskResult
     {
-        // TODO: Implement resetPassword() method.
+        // TODO: AuthController-ben be kell fejezni a végpontokat
+        $configuration = $this->getConfiguration();
+
+        $resetToken = $credentials["token"];
+        $basicUser = BasicUserData::fromResetToken($resetToken);
+        if($basicUser->isValid()) {
+            return new AuthenticationTaskResult(false, "MISMATCHED_TOKENS");
+        }
+
+        if($basicUser->isResetTokenExpired($configuration["reset_token_expiration_in_secs"])) {
+            return new AuthenticationTaskResult(false, "MISMATCHED_TOKENS");
+        }
+
+        // Új jelszók egyformák
+        if($credentials["password"] !== $credentials["repassword"]) {
+            $authResult = new AuthenticationTaskResult(false, "MISMATCHED_PASSWORDS");
+            return $authResult;
+        }
+
+        if (!PasswordHistory::checkPasswordComplexity($credentials["password"])) {
+            return new AuthenticationTaskResult(false, 'PASSWORD_COMPLEXITY_FAIL');
+        }
+
+        $basicUser["password"] = $this->hashPassword($credentials["password"])->output;
+        if (PasswordHistory::isInHistory($basicUser->getUserId(), $basicUser["password"], $configuration["password_history_limit"])) {
+            return new AuthenticationTaskResult(false, 'PASSWORD_IN_HISTORY');
+        }
+
+        ConnectionManager::getInstance()->persist($basicUser);
+        PasswordHistory::addPasswordToHistory($basicUser->getUserId(), $basicUser["password"]);
+        return new AuthenticationTaskResult(true, null);
     }
 
+    /**
+     * @param array $credentials
+     * @return AuthenticationTaskResult
+     * @throws \Exception
+     */
     public function changePassword(array $credentials): AuthenticationTaskResult
     {
-        // TODO: A password history metódusokat már megírtuk, azokat kell majd használni
+        $configuration = $this->getConfiguration();
+
+        $username = $credentials["username"];
+        $userCandidate = User::getUserByUsername($username);
+
+
+        // If the username doesnt exist, we stop the auth process with error.
+        if(!$userCandidate->isValidUsername()) {
+            return new AuthenticationTaskResult(false, null);
+        }
+
+        // BasicUserData betöltése
+        $basicUser = BasicUserData::fromUserId($userCandidate["user_id"]);
+
+        // Check password
+        if(!$this->checkPbkdf2ByPassword($basicUser->getHashedPassword(), $credentials["old_password"])) {
+            return new AuthenticationTaskResult(false, 'PASSWORD_ERROR');
+        }
+
+
+        // Megnézzük, hogy ki lett-e zárva már korábban. Ha eltelt lock_out_time_in_secs, akkor ezen tovább fog lépni.
+        if($basicUser->isLockedOut($configuration["lock_out_time_in_secs"])) {
+            return new AuthenticationTaskResult(false, 'USER_LOCKED');
+        }
+
+        // Új jelszók egyformák
+        if($credentials["password"] !== $credentials["repassword"]) {
+            $authResult = new AuthenticationTaskResult(false, "MISMATCHED_PASSWORDS");
+            return $authResult;
+        }
+
+        // New != Old
+        if($credentials["old_password"] == $credentials["password"]) {
+            return new AuthenticationTaskResult(false, "PASSWORD_IN_HISTORY");
+        }
+
+        if (!PasswordHistory::checkPasswordComplexity($credentials["password"])) {
+            return new AuthenticationTaskResult(false, 'PASSWORD_COMPLEXITY_FAIL');
+        }
+
+        $basicUser["password"] = $this->hashPassword($credentials["password"])->output;
+        if (PasswordHistory::isInHistory($userCandidate->getUserId(), $basicUser["password"], $configuration["password_history_limit"])) {
+            return new AuthenticationTaskResult(false, 'PASSWORD_IN_HISTORY');
+        }
+
+        ConnectionManager::getInstance()->persist($basicUser);
+        PasswordHistory::addPasswordToHistory($userCandidate->getUserId(), $basicUser["password"]);
+        return new AuthenticationTaskResult(true, null);
     }
 }
