@@ -5,7 +5,6 @@ namespace Ilx\Module\Security\Model\Auth\Basic;
 
 
 use Exception;
-use Ilx\Module\Security\Model\Auth\Remote\RemoteUserData;
 use PandaBase\Connection\ConnectionManager;
 use PandaBase\Exception\AccessDeniedException;
 use PandaBase\Record\SimpleRecord;
@@ -73,6 +72,15 @@ class BasicUserData extends SimpleRecord
     public function setToLockedOut() {
         $this->set("last_login_attempt", date("Y-m-d H:i:s"));
         ConnectionManager::persist($this);
+    }
+
+    /**
+     * Ellenőrzi, hogy a bemeneti lejárati időhöz képest lejárt-e a jelszó vagy sem.
+     * @param int $expiration_time
+     * @return bool
+     */
+    public function isPasswordExpired($expiration_time) {
+        return ($expiration_time + strtotime($this["last_password_mod"])) <= time();
     }
 
 

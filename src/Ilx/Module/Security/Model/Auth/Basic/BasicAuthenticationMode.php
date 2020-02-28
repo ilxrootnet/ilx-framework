@@ -4,6 +4,7 @@
 namespace Ilx\Module\Security\Model\Auth\Basic;
 
 
+use Ilx\Module\Security\Model\User;
 use Ilx\Module\Security\SecurityModule;
 use Kodiak\Security\Model\Authentication\AuthenticationMode;
 use PandaBase\Connection\Scheme\Table;
@@ -29,7 +30,7 @@ class BasicAuthenticationMode extends AuthenticationMode
 
     public function userClass()
     {
-        return BasicUserData::class;
+        return User::class;
     }
 
     public function getAuthenticationInterface()
@@ -83,7 +84,7 @@ class BasicAuthenticationMode extends AuthenticationMode
                     "basic_auth_id"         => "int(10) unsigned NOT NULL AUTO_INCREMENT",
                     "user_id"               => "int(10) unsigned NOT NULL",
                     "password"              => "varchar(256) DEFAULT NULL",
-                    "password_expire"       => "datetime DEFAULT NULL",
+                    "last_password_mod"     => "datetime DEFAULT NULL",
                     "last_login"            => "datetime DEFAULT NULL ",
                     "last_login_attempt"    => "datetime DEFAULT NULL ",
                     "reset_token"           => "varchar(200) DEFAULT NULL",
@@ -91,7 +92,17 @@ class BasicAuthenticationMode extends AuthenticationMode
                 ],
                 Table::PRIMARY_KEY => ["basic_auth_id"]
             ],
-            // TODO: Password history
+            PasswordHistory::class  => [
+                Table::TABLE_NAME => "auth_basic_password_history",
+                Table::TABLE_ID   => "pwh_id",
+                Table::FIELDS     => [
+                    "pwh_id"                => "int(10) unsigned NOT NULL AUTO_INCREMENT",
+                    "user_id"               => "int(10) unsigned NOT NULL",
+                    "password"              => "varchar(256) DEFAULT NULL",
+                    "store_date"            => "datetime DEFAULT NULL"
+                ],
+                Table::PRIMARY_KEY => ["pwh_id"]
+            ],
         ];
     }
 

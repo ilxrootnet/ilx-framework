@@ -23,7 +23,7 @@ class User extends SimpleRecord  implements AuthenticatedUserInterface
 
     public function getHashedPassword(): ?string
     {
-        return $this["password"];
+        throw new \InvalidArgumentException("User class does not have password field!");
     }
 
     public function clear(): void
@@ -67,12 +67,6 @@ class User extends SimpleRecord  implements AuthenticatedUserInterface
         } catch (ConnectionNotExistsException $e) {
             return false;
         }
-    }
-
-    // TODO: megszüntetni ezt a metódust
-    public function get2FASecret()
-    {
-
     }
 
     public static function getUserByUserId(int $user_id): AuthenticatedUserInterface

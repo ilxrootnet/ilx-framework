@@ -181,12 +181,12 @@ class SecurityModule extends IlxModule
                 Table::TABLE_NAME => "users",
                 Table::TABLE_ID   => "user_id",
                 Table::FIELDS     => [
-                    "user_id"               => "int(10) unsigned NOT NULL AUTO_INCREMENT",
+                    "user_id"               => "int(11) unsigned NOT NULL AUTO_INCREMENT",
                     "username"              => "varchar(200) DEFAULT NULL",
+                    "status_id"             => "int(1) NOT NULL DEFAULT '1'",
                     "email"                 => "varchar(200) NOT NULL",
                     "firstname"             => "varchar(256) DEFAULT NULL",
-                    "lastname"              => "varchar(256) DEFAULT NULL",
-                    "external_id"           => "int(10) unsigned NOT NULL"
+                    "lastname"              => "varchar(256) DEFAULT NULL"
 
                  ],
                 Table::PRIMARY_KEY => ["user_id"]

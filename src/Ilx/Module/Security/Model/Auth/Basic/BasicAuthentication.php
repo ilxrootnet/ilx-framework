@@ -7,6 +7,8 @@ namespace Ilx\Module\Security\Model\Auth\Basic;
 use Ilx\Module\Security\Model\User;
 use Kodiak\Security\Model\Authentication\AuthenticationInterface;
 use Kodiak\Security\Model\Authentication\AuthenticationTaskResult;
+use Kodiak\Security\Model\User\AuthenticatedUserInterface;
+use PandaBase\Connection\ConnectionManager;
 use PandaBase\Exception\AccessDeniedException;
 
 class BasicAuthentication extends AuthenticationInterface
@@ -58,42 +60,71 @@ class BasicAuthentication extends AuthenticationInterface
         }
         // Ha eddig eljutott tudta a jelszót. A login countert visszaállítjuk ha szükséges
         if($basicUser->getFailedLoginCount() > 0) {
-            // TODO: ha valamit később biztosan módosítunk akkor ez lehet false!
             $basicUser->resetFailedLoginCounter(true);
         }
 
-        // TODO: Ellenőrizzük, hogy lejárt-e a jelszó
-
-        /*
-         *  - check_password_expiration: true|false, kell-e jelszó lejáratot ellenőrizni
-         *  - password_expiration_time_in_secs: Jelszó lejárati idő másodpercekben
-         */
-
-
-
-        // Check password expiry
-        if (!$allowExpiry) {
-            if (!$userCandidate["password_expire"] || $userCandidate["password_expire"]<date('Y-m-d H:i:s')) {
-                return new AuthenticationTaskResult(false, 'PASSWORD_EXPIRED');
-            }
+        // Ellenőrizzük, hogy lejárt-e a jelszó
+        if($configuration["check_password_expiration"] &&
+            $basicUser->isPasswordExpired($configuration["password_expiration_time_in_secs"])) {
+            return new AuthenticationTaskResult(false, 'PASSWORD_EXPIRED');
         }
 
-        $userCandidate->unLock(); // reset the faild login count to 0
-
-        unset($userCandidate["password"]);
-        unset($userCandidate["mfa_secret"]);
 
         return new AuthenticationTaskResult(true, $userCandidate);
     }
 
     public function register(array $credentials): AuthenticationTaskResult
     {
-        // TODO: Implement register() method.
+        // Check mandatory fields existence
+        $fields = ["username", "email", "firstname", "lastname", "password", "repassword"];
+        foreach ($fields as $field) {
+            if(!isset($credentials[$field])) {
+                $authResult = new AuthenticationTaskResult(false, "MISSING_FIELD");
+                return $authResult;
+            }
+        }
+
+        if((User::getUserByUsername($credentials["username"]))->isValidUsername()) {
+            $authResult = new AuthenticationTaskResult(false, "USERNAME_EXISTS");
+            return $authResult;
+        }
+
+        if((User::getUserByEmail($credentials["email"]))->isValidUsername()) {
+            $authResult = new AuthenticationTaskResult(false, "EMAIL_EXISTS");
+            return $authResult;
+        }
+
+        if($credentials["password"] !== $credentials["repassword"]) {
+            $authResult = new AuthenticationTaskResult(false, "MISMATCHED_PASSWORDS");
+            return $authResult;
+        }
+        $credentials["password"] = $this->hashPassword($credentials["password"])->output;
+
+        /*
+         * Alap user létrehozása
+         */
+        $user = new User([
+            "username"  => $credentials["username"],
+            "email"     => $credentials["email"],
+            "firstname" => $credentials["firstname"],
+            "lastname"  => $credentials["lastname"]
+        ]);
+        ConnectionManager::getInstance()->persist($user);
+
+        $basicUser = new BasicUserData([
+            "user_id"               => $user["user_id"],
+            "password"              => $user["password"],
+            "last_password_mod"     => date("Y-m-d H:i:s")
+        ]);
+        ConnectionManager::getInstance()->persist($basicUser);
+
+
+        return new AuthenticationTaskResult(true, $user);
     }
 
     public function deRegister(array $credentials): AuthenticationTaskResult
     {
-        // TODO: Implement deRegister() method.
+        return new AuthenticationTaskResult(false, "Deregistration operation is forbidden.");
     }
 
     public function resetPassword(array $credentials): AuthenticationTaskResult
@@ -103,6 +134,6 @@ class BasicAuthentication extends AuthenticationInterface
 
     public function changePassword(array $credentials): AuthenticationTaskResult
     {
-        // TODO: Implement changePassword() method.
+        // TODO: A password history metódusokat már megírtuk, azokat kell majd használni
     }
 }
