@@ -7,7 +7,6 @@ namespace Ilx\Module\Security\Model\Auth\Basic;
 use Ilx\Module\Security\Model\User;
 use Kodiak\Security\Model\Authentication\AuthenticationInterface;
 use Kodiak\Security\Model\Authentication\AuthenticationTaskResult;
-use Kodiak\Security\Model\User\AuthenticatedUserInterface;
 use PandaBase\Connection\ConnectionManager;
 use PandaBase\Exception\AccessDeniedException;
 
@@ -73,6 +72,11 @@ class BasicAuthentication extends AuthenticationInterface
         return new AuthenticationTaskResult(true, $userCandidate);
     }
 
+    /**
+     * @param array $credentials
+     * @return AuthenticationTaskResult
+     * @throws AccessDeniedException
+     */
     public function register(array $credentials): AuthenticationTaskResult
     {
         // Check mandatory fields existence
@@ -122,6 +126,10 @@ class BasicAuthentication extends AuthenticationInterface
         return new AuthenticationTaskResult(true, $user);
     }
 
+    /**
+     * @param array $credentials
+     * @return AuthenticationTaskResult
+     */
     public function deRegister(array $credentials): AuthenticationTaskResult
     {
         return new AuthenticationTaskResult(false, "Deregistration operation is forbidden.");
@@ -134,7 +142,6 @@ class BasicAuthentication extends AuthenticationInterface
      */
     public function resetPassword(array $credentials): AuthenticationTaskResult
     {
-        // TODO: AuthController-ben be kell fejezni a végpontokat
         $configuration = $this->getConfiguration();
 
         $resetToken = $credentials["token"];

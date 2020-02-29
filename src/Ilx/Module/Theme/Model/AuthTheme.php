@@ -32,5 +32,22 @@ interface AuthTheme
      */
     public function getRegistrationForm();
 
+    /**
+     * Jelszó csere form-ot leíró twig fáj elérési útvonala.
+     * @return mixed
+     */
+    public function getChangePasswordForm();
+
+    /**
+     * Elfelejtett jelszó igénylése form-ot leíró twig fáj elérési útvonala.
+     * @return mixed
+     */
+    public function getResetPasswordRequestForm();
+
+    /**
+     * Elfelejtett jelszó form-ot leíró twig fáj elérési útvonala..
+     * @return mixed
+     */
+    public function getResetPasswordForm();
 
 }

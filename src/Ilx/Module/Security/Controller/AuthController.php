@@ -6,6 +6,7 @@ namespace Ilx\Module\Security\Controller;
 
 use Ilx\Module\Theme\Model\Frame;
 use Kodiak\Application;
+use Kodiak\Exception\Http\HttpInternalServerErrorException;
 use Kodiak\Request\RESTRequest;
 use Kodiak\Response\RESTResponse;
 use Kodiak\Security\Model\Authentication\AuthenticationMode;
@@ -37,6 +38,12 @@ class AuthController
         ]);
     }
 
+    /**
+     * Login felület megjelenítése.
+     *
+     * @return string
+     * @throws HttpInternalServerErrorException
+     */
     public function renderLogin() {
         /** @var Twig $twig */
         $twig = Application::get("twig");
@@ -44,5 +51,49 @@ class AuthController
         $frame = Application::get("frame");
         $theme = $frame->getAuthenticationTheme();
         return $twig->render($theme->getLoginForm(), [], false, $theme->getFrame());
+    }
+
+    /**
+     * Regisztációs felület megjelenítése.
+     *
+     * @return string
+     * @throws HttpInternalServerErrorException
+     */
+    public function renderRegistration() {
+        /** @var Twig $twig */
+        $twig = Application::get("twig");
+        /** @var Frame $frame */
+        $frame = Application::get("frame");
+        $theme = $frame->getAuthenticationTheme();
+        return $twig->render($theme->getRegistrationForm(), [], false, $theme->getFrame());
+    }
+
+    /**
+     * Elfelejtett jelszó igénylése form megjelenítése.
+     *
+     * @return string
+     * @throws HttpInternalServerErrorException
+     */
+    public function renderChangePasswordRequest() {
+        /** @var Twig $twig */
+        $twig = Application::get("twig");
+        /** @var Frame $frame */
+        $frame = Application::get("frame");
+        $theme = $frame->getAuthenticationTheme();
+        return $twig->render($theme->getResetPasswordRequestForm(), [], false, $theme->getFrame());
+    }
+
+    /**
+     * Elfelejtett jelszó form megjelenítése.
+     * @return string
+     * @throws HttpInternalServerErrorException
+     */
+    public function renderChangePassword() {
+        /** @var Twig $twig */
+        $twig = Application::get("twig");
+        /** @var Frame $frame */
+        $frame = Application::get("frame");
+        $theme = $frame->getAuthenticationTheme();
+        return $twig->render($theme->getResetPasswordForm(), [], false, $theme->getFrame());
     }
 }

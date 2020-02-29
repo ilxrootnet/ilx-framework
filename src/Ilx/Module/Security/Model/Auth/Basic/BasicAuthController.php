@@ -4,9 +4,14 @@
 namespace Ilx\Module\Security\Model\Auth\Basic;
 
 
+use Exception;
+use Ilx\Module\Security\Model\User;
 use Kodiak\Application;
 use Kodiak\Exception\Http\HttpAccessDeniedException;
+use Kodiak\Exception\Http\HttpInternalServerErrorException;
+use Kodiak\Request\RESTRequest;
 use Kodiak\Response\JsonResponse;
+use Kodiak\Response\RESTResponse;
 use Kodiak\Security\Model\Authentication\AuthenticationRequest;
 use Kodiak\Security\Model\SecurityManager;
 use Monolog\Logger;
@@ -31,6 +36,7 @@ class BasicAuthController
      *
      * @param array $params
      * @return JsonResponse
+     * @throws HttpInternalServerErrorException
      */
     public function login($params) {
         try {
@@ -70,16 +76,65 @@ class BasicAuthController
      * Felhasználó regisztrációja.
      *
      * @param array $params
+     * @return JsonResponse
+     * @throws HttpAccessDeniedException
+     * @throws HttpInternalServerErrorException
      */
     public function register($params) {
-        // TODO
+        $authResult = $this->securityManager->handleAuthenticationRequest(
+            new AuthenticationRequest(AuthenticationRequest::REQ_REGISTER,[
+                "username"  => $_POST["username"],
+                "email"     => $_POST["email"],
+                "firstname" => $_POST["firstname"],
+                "lastname"  => $_POST["lastname"],
+                "password"  => $_POST["password"],
+                "repassword"=> $_POST["repassword"]
+            ])
+        );
+
+        if($authResult->isSuccess()) {
+            /** @var User $user */
+            $user = $authResult->getResult();
+        }
+
+        return new JsonResponse([
+            "success" => $authResult->isSuccess(),
+            "msg" => $authResult->getResult()
+        ]);
     }
 
     /**
      * @param $params
+     * @return RESTResponse
      */
     public function changePassword($params) {
-        // TODO
+        /** @var Logger $logger */
+        $logger = Application::get('logger');
+        $request = RESTRequest::read();
+        if (isset($request["username"])){
+            $user = User::getUserByUsername($request["username"]);
+        }
+        else $user = Application::get('security')->getUser();
+        $user_id = $user["user_id"];
+        try {
+            $authResult = $this->securityManager->handleAuthenticationRequest(
+                new AuthenticationRequest(AuthenticationRequest::REQ_CHANGE_PASS,[
+                    "username"     => $user["username"],
+                    "old_password" => $request["old_password"],
+                    "password"     => $request["password"],
+                    "repassword"   => $request["repassword"],
+                ])
+            );
+            $logger->info("Password change for username ".$user["username"]." was ".($authResult->isSuccess() == true ? 'successful' : 'unsuccessful')." result:".$authResult->getResult());
+            if ($authResult->isSuccess()) {
+                return RESTResponse::success();
+            } else {
+                return RESTResponse::error($authResult->getResult());
+            }
+        }
+        catch (Exception $e) {
+            return RESTResponse::error($e->getMessage());
+        }
     }
 
     public function passwordResetRequest($params) {
@@ -87,10 +142,57 @@ class BasicAuthController
     }
 
     public function passwordReset($params) {
-        // TODO
+        try {
+            $request = RESTRequest::read();
+            if (!isset($request["password"]) || !isset($request["repassword"]) || !isset($request["token"])) return RESTResponse::error();
+            $authResult = $this->securityManager->handleAuthenticationRequest(
+                new AuthenticationRequest(AuthenticationRequest::REQ_RESET_PASS, [
+                    "token" => $request["token"],
+                    "password" => $request["password"],
+                    "repassword" => $request["repassword"],
+                ])
+            );
+            /** @var Logger $logger */
+            $logger = Application::get('logger');
+            $logger->info("Password reset for username " . $_POST["username"] . " was " . ($authResult->isSuccess() == true ? 'successful' : 'unsuccessful'));
+            if ($authResult->isSuccess()) {
+                return RESTResponse::success();
+            } else {
+                return RESTResponse::error();
+            }
+        }
+        catch(\Exception $e) {
+            return new JsonResponse([
+                "success" => false,
+                "msg" => $e->getMessage()
+            ]);
+        }
     }
 
+    /**
+     * Kijelentkezés művelet kezelése.
+     *
+     * @param $params
+     * @return JsonResponse
+     */
     public function logout($params) {
-        // TODO
+        try {
+            /** @var Logger $logger */
+            $logger = Application::get('logger');
+            $user = $this->securityManager->getUser();
+            $logger->info("Logout with username ".$user["username"]);
+
+            session_unset();
+            session_destroy();
+            return new JsonResponse([
+                "success" => true
+            ]);
+        }
+        catch(\Exception $e) {
+            return new JsonResponse([
+                "success" => false,
+                "msg" => $e->getMessage()
+            ]);
+        }
     }
 }
