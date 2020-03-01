@@ -77,7 +77,8 @@ class RemoteAuthenticationMode extends AuthenticationMode
 
     public function permissions() {
         return [
-            "^\/auth\/remote\/login$" => [Role::ANON_USER]
+            "^\/auth\/remote\/login$" => [Role::ANON_USER],
+            "^\/auth\/remote\/logout" => [Role::AUTH_USER],
         ];
     }
 }

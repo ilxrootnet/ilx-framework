@@ -7,6 +7,7 @@ namespace Ilx\Module\Security\Model\Auth\Basic;
 use Ilx\Module\Security\Model\User;
 use Ilx\Module\Security\SecurityModule;
 use Kodiak\Security\Model\Authentication\AuthenticationMode;
+use Kodiak\Security\Model\User\Role;
 use PandaBase\Connection\Scheme\Table;
 
 /**
@@ -27,6 +28,10 @@ use PandaBase\Connection\Scheme\Table;
  */
 class BasicAuthenticationMode extends AuthenticationMode
 {
+    const MAIL_REG_CONFIRMATION = "registration_confirmation";
+    const MAIL_PASSWORD_RESET = "password_reset";
+
+
 
     public static function name()
     {
@@ -63,12 +68,12 @@ class BasicAuthenticationMode extends AuthenticationMode
             ],
             "basicPasswordResetRequestRequest" => [
                 "method" => "POST",
-                "url" => "/auth/basic/change_password",
+                "url" => "/auth/basic/reset_password_request",
                 "handler" => BasicAuthController::class."::passwordResetRequest"
             ],
             "basicPasswordResetRequest" => [
                 "method" => "POST",
-                "url" => "/auth/basic/change_password",
+                "url" => "/auth/basic/reset_password",
                 "handler" => BasicAuthController::class."::passwordReset"
             ],
             "basicLogoutRequest" => [
@@ -114,6 +119,10 @@ class BasicAuthenticationMode extends AuthenticationMode
 
     public function permissions()
     {
-        // TODO: Implement permissions() method.
+        // TODO: URL-ket beállítani, mailer modult rákötni. IP-t is lehetne figyelni
+        return [
+            "^\/auth\/remote\/login$" => [Role::ANON_USER],
+            "^\/auth\/remote\/logout" => [Role::AUTH_USER],
+        ];
     }
 }

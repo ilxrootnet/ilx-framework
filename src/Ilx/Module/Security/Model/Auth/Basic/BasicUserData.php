@@ -149,10 +149,21 @@ class BasicUserData extends SimpleRecord
         }
     }
 
+    /**
+     * Van-e érvényes reset token az adatbázisban.
+     *
+     * @param int $expiration_time
+     * @return bool
+     */
     public function isResetTokenExpired($expiration_time) {
         return ($expiration_time + strtotime($this["last_password_mod"])) <= time();
     }
 
+    /**
+     * Létrehoz egy reset token-t az a userhez, amit elment az adatbázisba majd visszatér vele.
+     * @return string
+     * @throws Exception
+     */
     public function generateResetToken() {
         $this["reset_token"] = bin2hex(openssl_random_pseudo_bytes(32));
         $this["reset_token_date"] = date("Y-m-d H:i:s");

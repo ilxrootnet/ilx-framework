@@ -5,6 +5,7 @@ namespace Ilx\Module\Security\Model\Auth\Basic;
 
 
 use Exception;
+use Ilx\Module\Mailer\Mailer;
 use Ilx\Module\Security\Model\User;
 use Kodiak\Application;
 use Kodiak\Exception\Http\HttpAccessDeniedException;
@@ -104,7 +105,9 @@ class BasicAuthController
     }
 
     /**
-     * @param $params
+     * Jelszó csere.
+     *
+     * @param array $params
      * @return RESTResponse
      */
     public function changePassword($params) {
@@ -137,10 +140,41 @@ class BasicAuthController
         }
     }
 
+    /**
+     * Jelszó csere
+     * @param array $params
+     * @return RESTResponse
+     */
     public function passwordResetRequest($params) {
-        // TODO
+        /** @var Logger $logger */
+        $logger = Application::get('logger');
+        $request = RESTRequest::read();
+        $user = User::getUserByEmail($request["email"]);
+        if ($user->isValidUsername()) {
+            try {
+                $basicUser = BasicUserData::fromUserId($user["user_id"]);
+                $reset_token = $basicUser->generateResetToken();
+                $logger->info("Password reset request for username ".$user["username"]." was successful, email sent to: ".$user["email"]);
+                /** @var Mailer $mailer */
+                $mailer = Application::get("mailer");
+                $mailer->send(BasicAuthenticationMode::MAIL_PASSWORD_RESET, $user, [
+                    "reset_url"  => "https://".$_SERVER["HTTP_HOST"].Application::get('url_generator')->generate('renderPasswordResetPage', [
+                        "token" => $reset_token
+                        ]),
+                    "server_url" => "https://".$_SERVER["HTTP_HOST"]
+                ]);
+            } catch (\Exception $e) {
+                // Logolni kell a hibát
+                $logger->info("Password reset request for username ".$_POST["username"]." was unsuccessful, error: ".$e->getMessage());
+            }
+        }
+        return RESTResponse::success();
     }
 
+    /**
+     * @param array $params
+     * @return JsonResponse|RESTResponse
+     */
     public function passwordReset($params) {
         try {
             $request = RESTRequest::read();
