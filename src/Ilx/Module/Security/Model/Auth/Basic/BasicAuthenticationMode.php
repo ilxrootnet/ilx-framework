@@ -4,6 +4,7 @@
 namespace Ilx\Module\Security\Model\Auth\Basic;
 
 
+use Ilx\Module\Security\Controller\AuthController;
 use Ilx\Module\Security\Model\User;
 use Ilx\Module\Security\SecurityModule;
 use Kodiak\Security\Model\Authentication\AuthenticationMode;
@@ -81,6 +82,27 @@ class BasicAuthenticationMode extends AuthenticationMode
                 "url" => "/auth/basic/logout",
                 "handler" => BasicAuthController::class."::logout"
             ],
+
+            "renderLoginFrame" => [
+                "method" => "GET",
+                "url" => "/auth/login",
+                "handler" => AuthController::class."::renderLogin"
+            ],
+            "renderRegistrationFrame" => [
+                "method" => "GET",
+                "url" => "/auth/registration",
+                "handler" => AuthController::class."::renderRegistration"
+            ],
+            "renderResetPasswordRequestFrame" => [
+                "method" => "GET",
+                "url" => "/auth/reset_password",
+                "handler" => AuthController::class."::renderResetPasswordRequest"
+            ],
+            "renderChangePasswordFrame" => [
+                "method" => "GET",
+                "url" => "/auth/change_password",
+                "handler" => AuthController::class."::renderChangePassword"
+            ],
         ];
     }
 
@@ -119,10 +141,13 @@ class BasicAuthenticationMode extends AuthenticationMode
 
     public function permissions()
     {
-        // TODO: URL-ket beállítani, mailer modult rákötni. IP-t is lehetne figyelni
         return [
-            "^\/auth\/remote\/login$" => [Role::ANON_USER],
-            "^\/auth\/remote\/logout" => [Role::AUTH_USER],
+            "^\/auth\/basic\/login$" => [Role::ANON_USER],
+            "^\/auth\/basic\/logout$" => [Role::AUTH_USER],
+            "^\/auth\/basic\/register$" => [Role::ANON_USER],
+            "^\/auth\/basic\/change_password$" => [Role::AUTH_USER],
+            "^\/auth\/basic\/reset_password_request$" => [Role::ANON_USER],
+            "^\/auth\/basic\/reset_password$" => [Role::ANON_USER]
         ];
     }
 }

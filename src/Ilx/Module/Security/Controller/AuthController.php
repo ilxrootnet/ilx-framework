@@ -74,7 +74,7 @@ class AuthController
      * @return string
      * @throws HttpInternalServerErrorException
      */
-    public function renderChangePasswordRequest() {
+    public function renderResetPasswordRequest() {
         /** @var Twig $twig */
         $twig = Application::get("twig");
         /** @var Frame $frame */

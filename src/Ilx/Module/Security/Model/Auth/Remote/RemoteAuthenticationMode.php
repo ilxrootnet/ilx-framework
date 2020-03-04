@@ -4,6 +4,7 @@
 namespace Ilx\Module\Security\Model\Auth\Remote;
 
 
+use Ilx\Module\Security\Controller\AuthController;
 use Ilx\Module\Security\Model\User;
 use Ilx\Module\Security\SecurityModule;
 use Kodiak\Security\Model\Authentication\AuthenticationMode;
@@ -42,6 +43,11 @@ class RemoteAuthenticationMode extends AuthenticationMode
     public function routes()
     {
         return [
+            "renderLoginFrame" => [
+                "method" => "GET",
+                "url" => "/auth/login",
+                "handler" => AuthController::class."::renderLogin"
+            ],
             "remoteLoginRequest" => [
                 "method" => "POST",
                 "url" => "/auth/remote/login",

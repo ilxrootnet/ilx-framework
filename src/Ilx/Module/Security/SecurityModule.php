@@ -9,6 +9,7 @@ use Basil\DataSource\NestedSetSource;
 use Basil\Tree;
 use Ilx\Configuration;
 use Ilx\Module\Database\DatabaseModule;
+use Ilx\Module\Security\Model\Auth\Basic\BasicAuthenticationMode;
 use Ilx\Module\Theme\ThemeModule;
 use Ilx\Module\IlxModule;
 use Ilx\Module\ModuleManager;
@@ -87,13 +88,7 @@ class SecurityModule extends IlxModule
                 "method" => "POST",
                 "url" => "/auth/dialect",
                 "handler" => AuthController::class."::getAuthDialect"
-            ],
-
-            "renderLoginFrame" => [
-                "method" => "GET",
-                "url" => "/auth/login",
-                "handler" => AuthController::class."::renderLogin"
-            ],
+            ]
         ];
         foreach ($this->parameters["auth_modes"] as $name => $params) {
             $auth_class_name =  SecurityModule::authModeDispatcher($name);
@@ -313,6 +308,8 @@ class SecurityModule extends IlxModule
         switch ($name) {
             case RemoteAuthenticationMode::name():
                 return RemoteAuthenticationMode::class;
+            case BasicAuthenticationMode::name():
+                return BasicAuthenticationMode::class;
             default:
                 throw new \InvalidArgumentException("Unknown authentication mode name: $name");
         }
