@@ -1,8 +1,8 @@
 Resource-ok kezelése
 *************************
 
-Először is fontos tisztázni, hogy mit is értünk resource alatt. Az Ilx-Framework-ben minden olyan fájlt, aminek a
-kiterjesztése nem .php resource-nak (erőforrásnak) tekintünk. Például:
+Először is fontos tisztázni, hogy mit is értünk resource alatt.
+Az Ilx-Framework-ben minden olyan fájlt, aminek a kiterjesztése nem .php resource-nak (erőforrásnak) tekintünk. Például:
 
     * css fájlok
     * js fájlok

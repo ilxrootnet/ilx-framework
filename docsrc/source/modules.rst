@@ -21,3 +21,4 @@ Modul lista
    modules/menu_module
    modules/custom_module
    modules/security_module
+   modules/theme_module
