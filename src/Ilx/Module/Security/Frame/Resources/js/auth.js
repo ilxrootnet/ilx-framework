@@ -5,6 +5,11 @@ function login(username, password, callback) {
 }
 
 
+function register(credentials, callback) {
+    let dialect = getDialect(credentials["username"]);
+    dialect.register(credentials, callback);
+}
+
 /**
  *
  * @param {string} username
@@ -29,7 +34,7 @@ function getDialect(username) {
         case "auth_remote":
             return new RemoteDialect(username);
         case "auth_basic":
-            break;
+            return new BasicDialect(username);
     }
 }
 
@@ -40,17 +45,42 @@ class Dialect {
         this.username = username;
     }
 
-    login(password) {
-        return "";
+    login(password, callback)  {
+        throw new Error("Method not available.");
+    }
+
+    register(credentials, callback) {
+        throw new Error("Method not available.");
+    }
+
+    changePassword(credentials, callback) {
+        throw new Error("Method not available.");
+    }
+
+    resetPassword() {
+        throw new Error("Method not available.");
     }
 }
 
 class RemoteDialect extends Dialect {
-
     login(password, callback) {
         $.post('/auth/remote/login', {
             "username": this.username,
             "password": password
         }, callback);
     }
+}
+
+class BasicDialect extends Dialect {
+    login(password, callback) {
+        $.post('/auth/basic/login', {
+            "username": this.username,
+            "password": password
+        }, callback);
+    }
+
+    register(credentials, callback) {
+        $.post('/auth/basic/register', credentials, callback);
+    }
+
 }
