@@ -149,8 +149,9 @@ class BasicAuthController
         /** @var Logger $logger */
         $logger = Application::get('logger');
         $request = RESTRequest::read();
+        /** @var User $user */
         $user = User::getUserByEmail($request["email"]);
-        if ($user->isValidUsername()) {
+        if ($user->isValidUsername() and $user->isActive()) {
             try {
                 $basicUser = BasicUserData::fromUserId($user["user_id"]);
                 $reset_token = $basicUser->generateResetToken();

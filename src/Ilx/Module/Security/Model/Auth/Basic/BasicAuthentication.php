@@ -31,8 +31,8 @@ class BasicAuthentication extends AuthenticationInterface
         $userCandidate = User::getUserByUsername($username);
 
 
-        // If the username doesnt exist, we stop the auth process with error.
-        if(!$userCandidate->isValidUsername()) {
+        // If the username doesn't exist or it is inactive, we stop the auth process with error.
+        if(!$userCandidate->isValidUsername() or !$userCandidate->isActive()) {
             return new AuthenticationTaskResult(false, null);
         }
 
@@ -184,11 +184,12 @@ class BasicAuthentication extends AuthenticationInterface
         $configuration = $this->getConfiguration();
 
         $username = $credentials["username"];
+        /** @var User $userCandidate */
         $userCandidate = User::getUserByUsername($username);
 
 
         // If the username doesnt exist, we stop the auth process with error.
-        if(!$userCandidate->isValidUsername()) {
+        if(!$userCandidate->isValidUsername() or !$userCandidate->isActive()) {
             return new AuthenticationTaskResult(false, null);
         }
 

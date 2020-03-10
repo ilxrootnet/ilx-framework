@@ -9,6 +9,7 @@ use Basil\DataSource\NestedSetSource;
 use Basil\Tree;
 use Ilx\Configuration;
 use Ilx\Module\Database\DatabaseModule;
+use Ilx\Module\Mailer\MailerModule;
 use Ilx\Module\Security\Model\Auth\Basic\BasicAuthenticationMode;
 use Ilx\Module\Theme\ThemeModule;
 use Ilx\Module\IlxModule;
@@ -90,6 +91,7 @@ class SecurityModule extends IlxModule
                 "handler" => AuthController::class."::getAuthDialect"
             ]
         ];
+        // Url-ek összegyűjtése a különböző authentikációs módok közül
         foreach ($this->parameters["auth_modes"] as $name => $params) {
             $auth_class_name =  SecurityModule::authModeDispatcher($name);
             /** @var AuthenticationMode $auth_mode */
@@ -165,7 +167,8 @@ class SecurityModule extends IlxModule
     {
         print("Bootstraping SecurityModule...\n");
 
-
+        /** @var MailerModule $mailer_module */
+        $mailer_module = $moduleManager::get("Mailer");
 
         /** @var DatabaseModule $database_module */
         $database_module = $moduleManager::get("Database");

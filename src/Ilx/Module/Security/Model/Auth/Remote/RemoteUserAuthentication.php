@@ -61,6 +61,7 @@ class RemoteUserAuthentication extends AuthenticationInterface
             // Ellenőrizzük, hogy a user létezik-e már a rendszerben
             /** @var User $user */
             $user = User::getUserByUsername($user_data["username"]);
+
             if(!$user->isValid()) {
                 // Ha új, user létre kell hozni
                 $user = new User($user_data);
@@ -73,6 +74,10 @@ class RemoteUserAuthentication extends AuthenticationInterface
                 ConnectionManager::persist($remoteUserData);
             }
             else {
+                if(!$user->isActive()) {
+                    return new AuthenticationTaskResult(false, "Deactivated user");
+                }
+
                 // Ha létezik, frissítjük a létező user adatait
                 $user->setAll($user_data);
                 ConnectionManager::persist($user);

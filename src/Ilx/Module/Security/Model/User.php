@@ -14,6 +14,8 @@ use PandaBase\Record\SimpleRecord;
 
 class User extends SimpleRecord  implements AuthenticatedUserInterface
 {
+    const STATUS_ACTIVE = 1;
+    const STATUS_INACTIVE = 0;
 
     /**
      * User role-ok listája
@@ -44,6 +46,10 @@ class User extends SimpleRecord  implements AuthenticatedUserInterface
     public function getUserId(): ?int
     {
         return $this["user_id"];
+    }
+
+    public function isActive() {
+        return $this["status_id"] == self::STATUS_ACTIVE;
     }
 
     /**
