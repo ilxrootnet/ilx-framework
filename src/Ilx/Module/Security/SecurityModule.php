@@ -115,6 +115,7 @@ class SecurityModule extends IlxModule
             [
                 "class_name" => SecurityProvider::class,
                 "parameters" => [
+                    "user_class"    => User::class,
                     "sess_exp_time" => $this->parameters["sess_exp_time"],
                     "auth_selector" => $this->parameters["auth_selector"],
                     "auth_modes"  => $auth_modes
@@ -184,7 +185,8 @@ class SecurityModule extends IlxModule
                     "status_id"             => "int(1) NOT NULL DEFAULT '1'",
                     "email"                 => "varchar(200) NOT NULL",
                     "firstname"             => "varchar(256) DEFAULT NULL",
-                    "lastname"              => "varchar(256) DEFAULT NULL"
+                    "lastname"              => "varchar(256) DEFAULT NULL",
+                    "auth_mode"             => "varchar(50) DEFAULT NULL",
 
                  ],
                 Table::PRIMARY_KEY => ["user_id"]

@@ -39,11 +39,6 @@ class BasicAuthenticationMode extends AuthenticationMode
         return SecurityModule::AUTH_BASIC;
     }
 
-    public function userClass()
-    {
-        return User::class;
-    }
-
     public function getAuthenticationInterface()
     {
         return new BasicAuthentication($this->parameters);

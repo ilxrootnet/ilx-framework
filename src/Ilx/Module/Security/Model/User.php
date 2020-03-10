@@ -48,7 +48,7 @@ class User extends SimpleRecord  implements AuthenticatedUserInterface
         return $this["user_id"];
     }
 
-    public function isActive() {
+    public function isActive(): bool {
         return $this["status_id"] == self::STATUS_ACTIVE;
     }
 
@@ -120,5 +120,10 @@ class User extends SimpleRecord  implements AuthenticatedUserInterface
     public function isRoot()
     {
         return false;
+    }
+
+    public function getAuthModeName(): ?string
+    {
+        return $this["auth_mode"];
     }
 }

@@ -30,11 +30,6 @@ class RemoteAuthenticationMode extends AuthenticationMode
         return SecurityModule::AUTH_REMOTE;
     }
 
-    public function userClass()
-    {
-        return User::class;
-    }
-
     public function getAuthenticationInterface()
     {
         return new RemoteUserAuthentication($this->parameters);
