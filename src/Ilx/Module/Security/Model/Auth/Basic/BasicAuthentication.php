@@ -117,7 +117,7 @@ class BasicAuthentication extends AuthenticationInterface
 
         $basicUser = new BasicUserData([
             "user_id"               => $user["user_id"],
-            "password"              => $user["password"],
+            "password"              => $credentials["password"],
             "last_password_mod"     => date("Y-m-d H:i:s")
         ]);
         ConnectionManager::getInstance()->persist($basicUser);
