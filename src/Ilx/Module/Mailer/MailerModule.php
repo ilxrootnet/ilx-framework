@@ -45,7 +45,7 @@ class MailerModule extends IlxModule
                 "parameters" => [
                     "host"      => $this->parameters["host"],
                     "port"      => $this->parameters["port"],
-                    "user"      => $this->parameters["user"],
+                    "username"  => $this->parameters["username"],
                     "password"  => $this->parameters["password"],
                     "auth_mode" => $this->parameters["auth_mode"],
                     "encryption"=> $this->parameters["encryption"],
