@@ -68,8 +68,10 @@ class Ilx
 
     /**
      * Elindítja az ILX alkalmazást.
+     * @param bool $is_cron
+     * @param null $cron_configuration
      */
-    public static function run() {
+    public static function run($is_cron = false, $cron_configuration = null) {
 
         // Config beolvasása
         $config_array = Ilx::getConfiguration();
@@ -78,10 +80,15 @@ class Ilx
         date_default_timezone_set($config_array->get()[KodiConf::ENVIRONMENT]["timezone"]);
         error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
+        // Ha cron job akkor environment változóba átmozgatjuk a kapott paramétereket
+        if($is_cron) {
+            $config_array[KodiConf::ENVIRONMENT]["cron"] = $cron_configuration;
+        }
+
         // Kodiak futtatása
         try {
             $application = Application::getInstance();
-            $application->run($config_array->get());
+            $application->run($config_array->get(), $is_cron);
         } catch (ConfigurationException $e) {
             print("ERR 500: configuration_error");
         }
