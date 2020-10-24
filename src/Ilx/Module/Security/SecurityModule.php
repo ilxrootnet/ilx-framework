@@ -264,7 +264,7 @@ class SecurityModule extends IlxModule
             print("\tInserting default roles...\n");
             $roles = Role::getDefaultRoleStructure();
             Tree::convert(new ArraySource([
-                ArraySource::NODE_ID => "role_id",
+                ArraySource::NODE_ID => "node_id",
                 ArraySource::CHILDREN=> "children",
                 ArraySource::ROOT_ID => 1
             ], $roles), new NestedSetSource([
