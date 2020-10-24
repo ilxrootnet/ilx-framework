@@ -14,6 +14,7 @@ use Ilx\Module\Security\Model\Auth\Basic\BasicAuthenticationMode;
 use Ilx\Module\IlxModule;
 use Ilx\Module\ModuleManager;
 use Ilx\Module\Security\Controller\AuthController;
+use Ilx\Module\Security\Model\Auth\Basic\BasicUserData;
 use Ilx\Module\Security\Model\Auth\Remote\RemoteAuthenticationMode;
 use Ilx\Module\Security\Model\Role;
 use Ilx\Module\Security\Model\User;
@@ -247,6 +248,16 @@ class SecurityModule extends IlxModule
             }
             $prepared_statement->execute();
             ConnectionManager::getInstance()->getAccessManager()->registerUser(new User(1));
+
+            if(isset($this->parameters["auth_modes"]["auth_basic"])) {
+                $basicUser = new BasicUserData([
+                    "user_id"               => 1,
+                    "password"              => null,
+                    "last_password_mod"     => date("Y-m-d H:i:s")
+                ]);
+                ConnectionManager::persist($basicUser);
+            }
+
             print("\tAdmin user has been inserted.\n");
 
 

@@ -253,6 +253,7 @@ class BasicAuthController
                 BasicAuthenticationMode::MAIL_REG_CONFIRMATION,
                 $user["email"],
                 [
+                    "user_id" => $user_id,
                     "token" => $basicUser->generateVerificationToken()
                 ]);
 

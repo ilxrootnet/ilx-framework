@@ -72,7 +72,7 @@ class MailerModule extends IlxModule
     }
 
     public function addTemplate($template_name, $subject, $template_path) {
-        $this->parameters[$template_name] = [
+        $this->parameters["templates"][$template_name] = [
             Mailer::SUBJECT         => $subject,
             Mailer::TEMPLATE_PATH   => $template_path
         ];

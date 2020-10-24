@@ -72,11 +72,13 @@ class Role extends SimpleRecord
             $parent["children"][] = $child;
         }
         $pending_user = [
+            "node_id"   => 5,
             "role_id"   => KodiakRole::PENDING_USER,
             "role_name" => "pending_user",
             "role_desc" => "Pending User"
         ];
         $anon_user = [
+            "node_id"   => 4,
             "role_id"   => KodiakRole::ANON_USER,
             "role_name" => "anon_user",
             "role_desc" => "Unknown User"
@@ -84,6 +86,7 @@ class Role extends SimpleRecord
         addChild($pending_user, $anon_user);
 
         $auth_user = [
+            "node_id"   => 3,
             "role_id"   => KodiakRole::AUTH_USER,
             "role_name" => "auth_user",
             "role_desc" => "Authenticated User"
@@ -91,6 +94,7 @@ class Role extends SimpleRecord
         addChild($auth_user, $pending_user);
 
         $super_user = [
+            "node_id"   => 2,
             "role_id"   => KodiakRole::SUP_USER,
             "role_name" => "super_user",
             "role_desc" => "Super User"
@@ -98,6 +102,7 @@ class Role extends SimpleRecord
         addChild($super_user, $auth_user);
 
         $admin =  [
+            "node_id"   => 1,
             "role_id"   => KodiakRole::ADMIN,
             "role_name" => "admin",
             "role_desc" => "Admin/Rendszergazda"

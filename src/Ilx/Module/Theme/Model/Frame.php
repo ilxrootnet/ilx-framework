@@ -5,6 +5,8 @@ namespace Ilx\Module\Theme\Model;
 
 
 
+use Ilx\Module\Security\Model\AuthTheme;
+
 class Frame
 {
     /**

@@ -4,8 +4,10 @@
 namespace Ilx\Module\Security\Model\Auth\Basic;
 
 
+use Ilx\Module\Mailer\Mailer;
 use Ilx\Module\Security\Model\User;
 use Ilx\Module\Security\Model\UserRole;
+use Kodiak\Application;
 use Kodiak\Security\Model\Authentication\AuthenticationInterface;
 use Kodiak\Security\Model\Authentication\AuthenticationTaskResult;
 use PandaBase\Connection\ConnectionManager;
@@ -138,9 +140,15 @@ class BasicAuthentication extends AuthenticationInterface
          * Email verifikáció, ha szükséges
          */
         if($this->getConfiguration()[BasicAuthenticationMode::SEND_REGISTER_CONFIRMATION]) {
-            $result = (new BasicAuthController())->sendVerificationAddress([
-                "user_id" => $user->getUserId()
-            ]);
+            /** @var Mailer $mailer */
+            $mailer = Application::get("mailer");
+            $mailer->send(
+                BasicAuthenticationMode::MAIL_REG_CONFIRMATION,
+                $user["email"],
+                [
+                    "user_id" => $user["user_id"],
+                    "token" => $basicUser->generateVerificationToken()
+                ]);
         }
 
         return new AuthenticationTaskResult(true, $user);
