@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Ilx\Module\Theme\Model;
+namespace Ilx\Module\Security\Model;
 
 /**
  * Interface AuthTheme
@@ -45,9 +45,23 @@ interface AuthTheme
     public function getResetPasswordRequestForm();
 
     /**
-     * Elfelejtett jelszó form-ot leíró twig fáj elérési útvonala..
+     * Elfelejtett jelszó form-ot leíró twig fáj elérési útvonala.
      * @return mixed
      */
     public function getResetPasswordForm();
+
+    /**
+     * Sikeres email verifikáció esetén megjelenítendő twig template útvonala.
+     *
+     * @return mixed
+     */
+    public function getVerifiedEmailTemplate();
+
+    /**
+     * Sikertelen email verifikáció esetén megjelenítendő twig template útvonala.
+     *
+     * @return mixed
+     */
+    public function getUnVerifiedEmailTemplate();
 
 }

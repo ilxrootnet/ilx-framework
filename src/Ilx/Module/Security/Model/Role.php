@@ -6,26 +6,16 @@ namespace Ilx\Module\Security\Model;
 
 use Basil\DataSource\NestedSetSource;
 use Basil\Tree;
+use http\Exception\InvalidArgumentException;
 use PandaBase\Connection\ConnectionManager;
-use PandaBase\Exception\AccessDeniedException;
 use PandaBase\Exception\ConnectionNotExistsException;
 use PandaBase\Record\SimpleRecord;
+use Kodiak\Security\Model\User\Role as KodiakRole;
 
 class Role extends SimpleRecord
 {
-    /**
-     * Törli a role-t a paraméterben kapott user_id-ról.
-     *
-     * @param int $user_id
-     * @param int $role_id
-     * @throws AccessDeniedException
-     */
-    public static function removeUserFrom($user_id, $role_id) {
-        $user_role = UserRole::getObject($user_id, $role_id);
-        if($user_role->isValid()) {
-            $user_role->remove();
-        }
-    }
+
+    const ROLE_TABLE_NAME = "roles";
 
     /**
      * Visszaadja a role-t ábrázoló objektumot a fából.
@@ -53,5 +43,67 @@ class Role extends SimpleRecord
             NestedSetSource::RIGHT      => "node_rgt"
         ]);
         return Tree::from($source, $res["node_id"]);
+    }
+
+    /** Visszadja a paraméterben kapott role_name-hez tartozó azonosítót. Ha nem létezik a role_name
+     * InvalidArgumentException-t dob.
+     *
+     * @param string $role_name
+     * @return mixed
+     */
+    public static function getIdByName($role_name) {
+        $result = ConnectionManager::fetchAssoc(
+            "SELECT * FROM ".Role::ROLE_TABLE_NAME." WHERE role_name=:role_name", [
+            "role_name" => $role_name
+        ]);
+        if(count($result) < 1) {
+            throw new InvalidArgumentException("Unknown role name: $role_name");
+        }
+        return $result["role_id"];
+    }
+
+
+    public static function getDefaultRoleStructure() {
+
+        function addChild(&$parent, $child) {
+            if(!isset($parent["children"])) {
+                $parent["children"] = [];
+            }
+            $parent["children"][] = $child;
+        }
+        $pending_user = [
+            "role_id"   => KodiakRole::PENDING_USER,
+            "role_name" => "pending_user",
+            "role_desc" => "Pending User"
+        ];
+        $anon_user = [
+            "role_id"   => KodiakRole::ANON_USER,
+            "role_name" => "anon_user",
+            "role_desc" => "Unknown User"
+        ];
+        addChild($pending_user, $anon_user);
+
+        $auth_user = [
+            "role_id"   => KodiakRole::AUTH_USER,
+            "role_name" => "auth_user",
+            "role_desc" => "Authenticated User"
+        ];
+        addChild($auth_user, $pending_user);
+
+        $super_user = [
+            "role_id"   => KodiakRole::SUP_USER,
+            "role_name" => "super_user",
+            "role_desc" => "Super User"
+        ];
+        addChild($super_user, $auth_user);
+
+        $admin =  [
+            "role_id"   => KodiakRole::ADMIN,
+            "role_name" => "admin",
+            "role_desc" => "Admin/Rendszergazda"
+        ];
+        addChild($admin, $super_user);
+
+        return $admin;
     }
 }

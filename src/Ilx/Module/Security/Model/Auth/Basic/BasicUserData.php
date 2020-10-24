@@ -170,4 +170,42 @@ class BasicUserData extends SimpleRecord
         ConnectionManager::persist($this);
         return $this["reset_token"];
     }
+
+    /**
+     * Visszaigazolta-e a felhasználó az email címet.
+     *
+     * @return boolean
+     */
+    public function isVerified() {
+        return $this["is_verified"];
+    }
+
+    /**
+     * Generál egy email verifikációs tokent amit elment a db-be majd visszaadja visszatérési értékként.
+     *
+     * @return string
+     * @throws Exception
+     */
+    public function generateVerificationToken() {
+        $this["verification_token"] = bin2hex(openssl_random_pseudo_bytes(32));
+        ConnectionManager::persist($this);
+        return $this["verification_token"];
+    }
+
+    /**
+     * Ha a kapott token megfelelő, beállítja verifikáltnak a usert.
+     *
+     * @param string $token
+     * @return bool
+     * @throws Exception
+     */
+    public function verifyEmailToken($token) {
+        if($token == $this["verification_token"]) {
+            $this["is_verified"] = true;
+            $this["verification_token"] = null;
+            ConnectionManager::persist($this);
+            return true;
+        }
+        return false;
+    }
 }

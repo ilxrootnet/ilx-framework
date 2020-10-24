@@ -37,6 +37,20 @@ class UserRole extends SimpleRecord
     }
 
     /**
+     * Törli a role-t a paraméterben kapott user_id-ról.
+     *
+     * @param int $user_id
+     * @param int $role_id
+     * @throws AccessDeniedException
+     */
+    public static function removeUserFrom($user_id, $role_id) {
+        $user_role = UserRole::getObject($user_id, $role_id);
+        if($user_role->isValid()) {
+            $user_role->remove();
+        }
+    }
+
+    /**
      * Visszatér a paraméterben kapott user_id-hoz tartozó role_id-kal.
      *
      * Ha nincs a user_id-hoz tartozó role_id, üres tömbbel tér vissza.

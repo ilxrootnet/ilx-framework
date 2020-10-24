@@ -11,7 +11,6 @@ use Ilx\Configuration;
 use Ilx\Module\Database\DatabaseModule;
 use Ilx\Module\Mailer\MailerModule;
 use Ilx\Module\Security\Model\Auth\Basic\BasicAuthenticationMode;
-use Ilx\Module\Theme\ThemeModule;
 use Ilx\Module\IlxModule;
 use Ilx\Module\ModuleManager;
 use Ilx\Module\Security\Controller\AuthController;
@@ -19,11 +18,12 @@ use Ilx\Module\Security\Model\Auth\Remote\RemoteAuthenticationMode;
 use Ilx\Module\Security\Model\Role;
 use Ilx\Module\Security\Model\User;
 use Ilx\Module\Security\Model\UserRole;
-use InvalidArgumentException;
+use Ilx\Module\Security\Provider\ExtendedSecurityProvider;
 use Kodiak\Security\Hook\FirewallHook;
 use Kodiak\Security\Hook\PandabaseAccessManagerHook;
 use Kodiak\Security\Hook\SessionRouterHook;
 use Kodiak\Security\Model\Authentication\AuthenticationMode;
+use Kodiak\Security\Model\User\Role as KodiakRole;
 use Kodiak\ServiceProvider\SecurityProvider\SecurityProvider;
 use PandaBase\Connection\ConnectionManager;
 use PandaBase\Connection\Scheme\Table;
@@ -113,7 +113,7 @@ class SecurityModule extends IlxModule
 
         return [
             [
-                "class_name" => SecurityProvider::class,
+                "class_name" => ExtendedSecurityProvider::class,
                 "parameters" => [
                     "user_class"    => User::class,
                     "sess_exp_time" => $this->parameters["sess_exp_time"],
@@ -250,49 +250,26 @@ class SecurityModule extends IlxModule
             print("\tAdmin user has been inserted.\n");
 
 
-            print("\tInserting roles...\n");
-            $roles = [
-                "role_id"   => 99,
-                "role_name" => "admin",
-                "role_desc" => "Admin/Rendszergazda",
-                "children"  => [
-                    [
-                        "role_id"   => 10,
-                        "role_name" => "SuperUser",
-                        "role_desc" => "Super user",
-                    ]
-                ]
-
-            ];
+            print("\tInserting default roles...\n");
+            $roles = Role::getDefaultRoleStructure();
             Tree::convert(new ArraySource([
                 ArraySource::NODE_ID => "role_id",
                 ArraySource::CHILDREN=> "children",
                 ArraySource::ROOT_ID => 1
             ], $roles), new NestedSetSource([
                 NestedSetSource::DB         => ConnectionManager::getInstance()->getConnection()->getDatabase(),
-                NestedSetSource::TABLE_NAME => "roles",
+                NestedSetSource::TABLE_NAME => Role::ROLE_TABLE_NAME,
                 NestedSetSource::NODE_ID    => "node_id",
                 NestedSetSource::ROOT_ID    => 1,
                 NestedSetSource::LEFT       => "node_lft",
                 NestedSetSource::RIGHT      => "node_rgt"
             ]));
-            print("\tRoles have been inserted.\n");
+            print("\tDefault roles have been inserted.\n");
 
 
-            print("\tAdding roles to users...\n");
-            $user_roles = [
-                [
-                    "user_id"   => 1,
-                    "role_id"   => 99
-                ]
-            ];
-            foreach ($user_roles as $user_role) {
-                $user_id = $user_role['user_id'];
-                $role_id = $user_role['role_id'];
-                UserRole::addUserTo($user_role["user_id"], $user_role["role_id"]);
-                print("\tAdded role: $role_id to user: $user_id\n");
-            }
-            print("\tRoles has been added to users.\n");
+            print("\tAttaching roles to admin user...\n");
+            UserRole::addUserTo(1, KodiakRole::ADMIN);
+            print("\tRoles has been added to admin user.\n");
         }
         else {
             print("\tMissing admin email ...\n");

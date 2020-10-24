@@ -6,7 +6,9 @@ namespace Ilx\Module\Security\Model\Auth\Basic;
 
 use Exception;
 use Ilx\Module\Mailer\Mailer;
+use Ilx\Module\Security\Model\AuthTheme;
 use Ilx\Module\Security\Model\User;
+use Ilx\Module\Theme\Model\Frame;
 use Kodiak\Application;
 use Kodiak\Exception\Http\HttpAccessDeniedException;
 use Kodiak\Exception\Http\HttpInternalServerErrorException;
@@ -15,7 +17,9 @@ use Kodiak\Response\JsonResponse;
 use Kodiak\Response\RESTResponse;
 use Kodiak\Security\Model\Authentication\AuthenticationRequest;
 use Kodiak\Security\Model\SecurityManager;
+use Kodiak\ServiceProvider\TwigProvider\Twig;
 use Monolog\Logger;
+use PandaBase\Exception\AccessDeniedException;
 
 class BasicAuthController
 {
@@ -228,6 +232,73 @@ class BasicAuthController
                 "success" => false,
                 "msg" => $e->getMessage()
             ]);
+        }
+    }
+
+    /**
+     * Email cím verifikáció generálása.
+     *
+     * @param $params
+     * @return JsonResponse
+     */
+    public function sendVerificationAddress($params) {
+        try {
+            $user_id = $params["user_id"];
+
+            $user = new User($user_id);
+            $basicUser = BasicUserData::fromUserId($user_id);
+            /** @var Mailer $mailer */
+            $mailer = Application::get("mailer");
+            $mailer->send(
+                BasicAuthenticationMode::MAIL_REG_CONFIRMATION,
+                $user["email"],
+                [
+                    "token" => $basicUser->generateVerificationToken()
+                ]);
+
+            return new JsonResponse([
+                "success" => true,
+                "msg" => "Email verification token has been set.",
+            ]);
+
+        } catch (Exception $e) {
+            return new JsonResponse([
+                "success" => false,
+                "msg" => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Email cím verifikációja.
+     *
+     * @param $params
+     * @return string
+     * @throws HttpInternalServerErrorException
+     */
+    public function verifyEmailAddress($params) {
+        try {
+        $user_id = $_GET["user_id"];
+        $token = $_GET["token"];
+
+        $basicUser = BasicUserData::fromUserId($user_id);
+
+        $result = $basicUser->verifyEmailToken($token);
+
+        /** @var Twig $twig */
+        $twig = Application::get("twig");
+        /** @var Frame $frame */
+        $frame = Application::get("frame");
+        /** @var AuthTheme $theme */
+        $theme = $frame->getAuthenticationTheme();
+
+        if($result) {
+            return $twig->render($theme->getVerifiedEmailTemplate(), [], false, $theme->getFrame());
+        }
+        return $twig->render($theme->getUnVerifiedEmailTemplate(), [], false, $theme->getFrame());
+
+        } catch (Exception $e) {
+            throw new HttpInternalServerErrorException("Unknown user or wrong verfification token");
         }
     }
 }

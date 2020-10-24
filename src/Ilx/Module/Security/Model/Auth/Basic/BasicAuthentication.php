@@ -5,6 +5,7 @@ namespace Ilx\Module\Security\Model\Auth\Basic;
 
 
 use Ilx\Module\Security\Model\User;
+use Ilx\Module\Security\Model\UserRole;
 use Kodiak\Security\Model\Authentication\AuthenticationInterface;
 use Kodiak\Security\Model\Authentication\AuthenticationTaskResult;
 use PandaBase\Connection\ConnectionManager;
@@ -39,6 +40,10 @@ class BasicAuthentication extends AuthenticationInterface
         // BasicUserData betöltése
         $basicUser = BasicUserData::fromUserId($userCandidate["user_id"]);
 
+        // Email cím ellenőrzése
+        if(!$basicUser->isVerified() && $configuration[BasicAuthenticationMode::SEND_REGISTER_CONFIRMATION]) {
+            return new AuthenticationTaskResult(false, 'UNCONFIRMED_EMAIL_ADDRESS');
+        }
 
         // Megnézzük, hogy ki lett-e zárva már korábban. Ha eltelt lock_out_time_in_secs, akkor ezen tovább fog lépni.
         if($basicUser->isLockedOut($configuration["lock_out_time_in_secs"])) {
@@ -122,6 +127,21 @@ class BasicAuthentication extends AuthenticationInterface
         ]);
         ConnectionManager::getInstance()->persist($basicUser);
 
+        /*
+         * Jogosultságok hozzáadása
+         */
+        foreach ($this->getConfiguration()[BasicAuthenticationMode::DEFAULT_ROLES] as $role_id) {
+            UserRole::addUserTo($user->getUserId(), $role_id);
+        }
+
+        /*
+         * Email verifikáció, ha szükséges
+         */
+        if($this->getConfiguration()[BasicAuthenticationMode::SEND_REGISTER_CONFIRMATION]) {
+            $result = (new BasicAuthController())->sendVerificationAddress([
+                "user_id" => $user->getUserId()
+            ]);
+        }
 
         return new AuthenticationTaskResult(true, $user);
     }
