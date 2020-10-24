@@ -30,8 +30,7 @@
         "ext-json": "*",
         "ext-pdo": "*",
         "ext-openssl": "*",
-        "ext-curl": "*",
-       "ext-http": "*"
+        "ext-curl": "*"
     },
     "bin": ["bin/ilx.php"],
     "minimum-stability": "dev",
