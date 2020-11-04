@@ -144,7 +144,7 @@ class BasicAuthentication extends AuthenticationInterface
             $mailer = Application::get("mailer");
             $mailer->send(
                 BasicAuthenticationMode::MAIL_REG_CONFIRMATION,
-                $user["email"],
+                $user,
                 [
                     "user_id" => $user["user_id"],
                     "token" => $basicUser->generateVerificationToken()
