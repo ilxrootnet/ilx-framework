@@ -61,7 +61,6 @@ class User extends SimpleRecord  implements AuthenticatedUserInterface
         if($this->roles == null) {
             $this->roles = UserRole::getRoles($this["user_id"]);
         }
-        array_unshift($this->roles, BaseRole::AUTH_USER);
 
         return $this->roles;
     }
