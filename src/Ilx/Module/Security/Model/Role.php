@@ -6,7 +6,7 @@ namespace Ilx\Module\Security\Model;
 
 use Basil\DataSource\NestedSetSource;
 use Basil\Tree;
-use http\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use PandaBase\Connection\ConnectionManager;
 use PandaBase\Exception\ConnectionNotExistsException;
 use PandaBase\Record\SimpleRecord;
@@ -71,19 +71,21 @@ class Role extends SimpleRecord
             }
             $parent["children"][] = $child;
         }
+        /*
+         * TODO: Ha kell majd 2FA ezt megnézni, hogy kell-e
         $pending_user = [
             "node_id"   => 5,
             "role_id"   => KodiakRole::PENDING_USER,
             "role_name" => "pending_user",
             "role_desc" => "Pending User"
         ];
+        */
         $anon_user = [
             "node_id"   => 4,
             "role_id"   => KodiakRole::ANON_USER,
             "role_name" => "anon_user",
             "role_desc" => "Unknown User"
         ];
-        addChild($pending_user, $anon_user);
 
         $auth_user = [
             "node_id"   => 3,
@@ -91,7 +93,7 @@ class Role extends SimpleRecord
             "role_name" => "auth_user",
             "role_desc" => "Authenticated User"
         ];
-        addChild($auth_user, $pending_user);
+        addChild($auth_user, $anon_user);
 
         $super_user = [
             "node_id"   => 2,
