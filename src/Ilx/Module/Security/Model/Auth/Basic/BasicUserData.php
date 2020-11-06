@@ -121,7 +121,7 @@ class BasicUserData extends SimpleRecord
      * @throws \Exception
      */
     public function increaseFailedLoginCounter($persist = false) {
-        $this->set("failed_log_count", intval($this->get("failed_log_count")) + 1);
+        $this->set("failed_login_count", intval($this->get("failed_login_count")) + 1);
         ConnectionManager::persist($this);
     }
 
@@ -132,7 +132,7 @@ class BasicUserData extends SimpleRecord
      * @throws AccessDeniedException
      */
     public function getFailedLoginCount() {
-        return intval($this->get("failed_log_count"));
+        return intval($this->get("failed_login_count"));
     }
 
     /**
@@ -143,7 +143,7 @@ class BasicUserData extends SimpleRecord
      * @throws \Exception
      */
     public function resetFailedLoginCounter($persist = false) {
-        $this->set("failed_log_count", 0);
+        $this->set("failed_login_count", 0);
         if($persist) {
             ConnectionManager::persist($this);
         }
