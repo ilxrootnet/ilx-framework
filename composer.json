@@ -10,7 +10,12 @@
             "name": "Attila Nagy",
             "email": "attila.nagy@ilx.hu",
             "role": "Developer"
-        }
+        },
+        {
+            "name": "Attila Gyurman",
+            "email": "attila.gyurman@ilx.hu",
+            "role": "Developer"
+        }        
     ],
     "autoload": {
         "psr-0": {

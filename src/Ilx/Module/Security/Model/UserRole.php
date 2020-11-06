@@ -83,7 +83,9 @@ class UserRole extends SimpleRecord
          * 1.2, Ha nem kell a leszármazott role-kat lehúzni akkor is végeztünk
          */
         if(!$include_descendants) {
-            return [$user_roles['role_id']];
+            return array_map(function($row){
+                return intval($row["role_id"]);
+            }, $user_roles);
         }
 
         /*
@@ -93,9 +95,9 @@ class UserRole extends SimpleRecord
         foreach ($user_roles as $user_role) {
             $role = Role::getTreeObject($user_role["role_id"]);
             $descendants = $role->descendants();
-            $roles[] = $role["role_id"];
+            $roles[] = intval($user_role["role_id"]);
             $roles = array_merge($roles, array_map(function($row){
-                return $row["role_id"];
+                return intval($row["role_id"]);
             }, $descendants));
         }
         return array_unique($roles);
