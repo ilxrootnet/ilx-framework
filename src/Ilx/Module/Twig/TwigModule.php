@@ -9,6 +9,7 @@ use Ilx\Module\IlxModule;
 use Ilx\Module\ModuleManager;
 use Ilx\Module\Resource\ResourceModule;
 use Ilx\Module\Resource\ResourcePath;
+use Ilx\Module\Twig\Provider\BaseUrlProvider;
 use Kodiak\ServiceProvider\TwigProvider\Twig;
 use Kodiak\ServiceProvider\TwigProvider\TwigServiceProvider;
 use Kodiak\ServiceProvider\UrlGeneratorProvider\UrlGeneratorProvider;
@@ -100,6 +101,10 @@ class TwigModule extends IlxModule
             ],
             [
                 "class_name" => UrlGeneratorProvider::class,
+                "parameters" => [],
+            ],
+            [
+                "class_name" => BaseUrlProvider::class,
                 "parameters" => [],
             ]
         ];
