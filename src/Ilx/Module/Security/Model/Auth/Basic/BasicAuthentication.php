@@ -75,7 +75,7 @@ class BasicAuthentication extends AuthenticationInterface
             return new AuthenticationTaskResult(false, 'PASSWORD_EXPIRED');
         }
 
-
+        $basicUser->updateLastLogin();
         return new AuthenticationTaskResult(true, $userCandidate);
     }
 

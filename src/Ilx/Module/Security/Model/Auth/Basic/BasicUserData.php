@@ -79,7 +79,6 @@ class BasicUserData extends SimpleRecord
      *
      * @param int $lock_out_time_in_secs
      * @return bool
-     * @throws AccessDeniedException
      */
     public function isLockedOut($lock_out_time_in_secs) {
         // Ha a last login attempt időn belül van
@@ -207,5 +206,16 @@ class BasicUserData extends SimpleRecord
             return true;
         }
         return false;
+    }
+
+    /**
+     * Frissíti az adatbázisban a last_login-t az aktuális időpontra.
+     *
+     * @throws AccessDeniedException
+     * @throws Exception
+     */
+    public function updateLastLogin() {
+        $this->set("last_login", date("Y-m-d H:i:s"));
+        ConnectionManager::persist($this);
     }
 }
