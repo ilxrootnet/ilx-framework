@@ -58,6 +58,16 @@ class Mailer
         $this->templates = $configuration["templates"];
     }
 
+    /**
+     * Felülírja a konfigurációban beállított alapméretezett küldő email címet és küldő nevet.
+     *
+     * @param string $sourceAddress Új küldő email cím.
+     * @param string $sourceName Új küldő név.
+     */
+    public function setFrom($sourceAddress, $sourceName) {
+        $this->sourceAddress = $sourceAddress;
+        $this->sourceName = $sourceName;
+    }
 
     /**
      * Levelet küld a paraméterben küldött címzettnek.
