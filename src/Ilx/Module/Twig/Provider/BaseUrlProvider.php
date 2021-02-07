@@ -33,7 +33,7 @@ class BaseUrlProvider implements ServiceProviderInterface
             /** @var Twig $mytwig */
             $mytwig = $twig;
 
-            $base_url_function = new \Twig_SimpleFunction("base_url", function (){
+            $base_url_function = new \Twig\TwigFunction("base_url", function (){
                 return sprintf(
                     "%s://%s",
                     isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http',
