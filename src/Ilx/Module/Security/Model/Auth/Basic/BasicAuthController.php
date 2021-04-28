@@ -251,10 +251,12 @@ class BasicAuthController
             $mailer = Application::get("mailer");
             $mailer->send(
                 BasicAuthenticationMode::MAIL_REG_CONFIRMATION,
-                $user["email"],
+                $user,
                 [
                     "user_id" => $user_id,
-                    "token" => $basicUser->generateVerificationToken()
+                    "token" => $basicUser->generateVerificationToken(),
+                    "firstname" => $user["firstname"],
+                    "lastname" => $user["lastname"],
                 ]);
 
             return new JsonResponse([

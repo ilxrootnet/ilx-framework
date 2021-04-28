@@ -147,7 +147,9 @@ class BasicAuthentication extends AuthenticationInterface
                 $user,
                 [
                     "user_id" => $user["user_id"],
-                    "token" => $basicUser->generateVerificationToken()
+                    "token" => $basicUser->generateVerificationToken(),
+                    "firstname" => $credentials["firstname"],
+                    "lastname" => $credentials["lastname"],
                 ]);
         }
 
