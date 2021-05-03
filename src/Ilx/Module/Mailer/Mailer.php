@@ -10,6 +10,7 @@ use Kodiak\ServiceProvider\TwigProvider\Twig;
 use Swift_Mailer;
 use Swift_Message;
 use Swift_SmtpTransport;
++use Swift_Attachment;
 
 class Mailer
 {
@@ -78,13 +79,14 @@ class Mailer
      * @return int
      * @throws HttpInternalServerErrorException
      */
-    public function send($template_name, $recipient, $data) {
+    public function send($template_name, $recipient, $data, $subject=null, $attachment=null) {
         $template = $this->dispatchTemplate($template_name);
 
         /** @var Twig $twig */
         $twig = Application::get("twig");
 
-        $message = new Swift_Message($template[Mailer::SUBJECT]);
+        $message = new Swift_Message(($subject!==null ? $subject : $template[Mailer::SUBJECT]));
+        if ($attachment && file_exists($attachment)) $message->attach(Swift_Attachment::fromPath($attachment));
         $message
             ->setFrom([
                 $this->sourceAddress => $this->sourceName
