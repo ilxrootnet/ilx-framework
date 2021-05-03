@@ -147,6 +147,23 @@ class Ilx
     }
 
     /**
+     * Aktuális URL visszaadása (cron esetén nem működik)
+     * @return string
+     */
+    public static function baseUrl() {
+        if ($_SERVER["HTTPS"]) { 
+            $url ="https://"; 
+        } else {
+            $url = "http://";
+        }
+        $url.= $_SERVER["HTTP_HOST"];
+        if (!in_array($_SERVER["SERVER_PORT"], [80, 443])) { 
+            $url.=":".$_SERVER["SERVER_PORT"];
+        }
+        return $url;
+    }
+
+    /**
      * Css fájlokat tartalmazó könyvtár elérési útvonala.
      *
      * @param bool $relative Ha igaz, akkor a webPath-hoz képesti relatív útvonalat adja vissza.
