@@ -36,12 +36,12 @@ class ExtendedSecurityProvider implements ServiceProviderInterface
             $mytwig = $twig;
             /** @var SecurityManager $securityManager */
             $securityManager = $c["security"];
-            $get_user = new \Twig_SimpleFunction("get_user",function() use($securityManager) {
+            $get_user = new \Twig\TwigFunction("get_user",function() use($securityManager) {
                 return $securityManager->getUser();
             });
             $mytwig->getTwigEnvironment()->addFunction($get_user);
 
-            $has_role = new \Twig_SimpleFunction("has_role",function($role) use($securityManager) {
+            $has_role = new \Twig\TwigFunction("has_role",function($role) use($securityManager) {
 
                 if(is_string($role)) {
                     $role_id = Role::getIdByName($role);
