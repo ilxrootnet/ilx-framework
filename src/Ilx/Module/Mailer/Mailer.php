@@ -10,7 +10,7 @@ use Kodiak\ServiceProvider\TwigProvider\Twig;
 use Swift_Mailer;
 use Swift_Message;
 use Swift_SmtpTransport;
-+use Swift_Attachment;
+use Swift_Attachment;
 
 class Mailer
 {

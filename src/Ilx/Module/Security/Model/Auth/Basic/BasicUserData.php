@@ -155,7 +155,7 @@ class BasicUserData extends SimpleRecord
      * @return bool
      */
     public function isResetTokenExpired($expiration_time) {
-        return ($expiration_time + strtotime($this["last_password_mod"])) <= time();
+        return ($expiration_time + strtotime($this["reset_token_date"])) <= time();
     }
 
     /**

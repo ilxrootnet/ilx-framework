@@ -31,10 +31,10 @@ class PasswordHistory extends SimpleRecord
             foreach ($list as $old) {
                 $salt = substr($old["password"], 0, 64);
                 $hashed_new = BasicAuthentication::hashPassword($new_password, $salt);
-                if ($hashed_new->output == $old["password"]) return false;
+                if ($hashed_new->output == $old["password"]) return true;
             }
         }
-        return true;
+        return false;
     }
 
     /**
@@ -61,7 +61,7 @@ class PasswordHistory extends SimpleRecord
     public static function checkPasswordComplexity($pwd) {
         $pw_ok = true;
 
-        if (strlen($pwd) < 10) {
+        if (strlen($pwd) < 8) {
             $pw_ok = false;
         }
 

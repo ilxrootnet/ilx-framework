@@ -159,15 +159,16 @@ class BasicAuthController
             try {
                 $basicUser = BasicUserData::fromUserId($user["user_id"]);
                 $reset_token = $basicUser->generateResetToken();
-                $logger->info("Password reset request for username ".$user["username"]." was successful, email sent to: ".$user["email"]);
                 /** @var Mailer $mailer */
                 $mailer = Application::get("mailer");
                 $mailer->send(BasicAuthenticationMode::MAIL_PASSWORD_RESET, $user, [
-                    "reset_url"  => "https://".$_SERVER["HTTP_HOST"].Application::get('url_generator')->generate('renderPasswordResetPage', [
+                    "reset_url"  => "https://".$_SERVER["HTTP_HOST"].Application::get('url_generator')->generate('renderResetPasswordFrame', [
                         "token" => $reset_token
                         ]),
                     "server_url" => "https://".$_SERVER["HTTP_HOST"]
                 ]);
+                $logger->info("Password reset request for username ".$user["username"]." was successful, email sent to: ".$user["email"]);
+
             } catch (\Exception $e) {
                 // Logolni kell a hibát
                 $logger->info("Password reset request for username ".$_POST["username"]." was unsuccessful, error: ".$e->getMessage());
@@ -183,7 +184,7 @@ class BasicAuthController
     public function passwordReset($params) {
         try {
             $request = RESTRequest::read();
-            if (!isset($request["password"]) || !isset($request["repassword"]) || !isset($request["token"])) return RESTResponse::error();
+            if (!isset($request["password"]) || !isset($request["repassword"]) || !isset($request["token"])) return RESTResponse::error('Input error');
             $authResult = $this->securityManager->handleAuthenticationRequest(
                 new AuthenticationRequest(AuthenticationRequest::REQ_RESET_PASS, [
                     "token" => $request["token"],
@@ -197,7 +198,7 @@ class BasicAuthController
             if ($authResult->isSuccess()) {
                 return RESTResponse::success();
             } else {
-                return RESTResponse::error();
+                return RESTResponse::error('Auth request error');
             }
         }
         catch(\Exception $e) {
@@ -281,24 +282,24 @@ class BasicAuthController
      */
     public function verifyEmailAddress($params) {
         try {
-        $user_id = $_GET["user_id"];
-        $token = $_GET["token"];
+            $user_id = $_GET["user_id"];
+            $token = $_GET["token"];
 
-        $basicUser = BasicUserData::fromUserId($user_id);
+            $basicUser = BasicUserData::fromUserId($user_id);
 
-        $result = $basicUser->verifyEmailToken($token);
+            $result = $basicUser->verifyEmailToken($token);
 
-        /** @var Twig $twig */
-        $twig = Application::get("twig");
-        /** @var Frame $frame */
-        $frame = Application::get("frame");
-        /** @var AuthTheme $theme */
-        $theme = $frame->getAuthenticationTheme();
+            /** @var Twig $twig */
+            $twig = Application::get("twig");
+            /** @var Frame $frame */
+            $frame = Application::get("frame");
+            /** @var AuthTheme $theme */
+            $theme = $frame->getAuthenticationTheme();
 
-        if($result) {
-            return $twig->render($theme->getVerifiedEmailTemplate(), [], false, $theme->getFrame());
-        }
-        return $twig->render($theme->getUnVerifiedEmailTemplate(), [], false, $theme->getFrame());
+            if($result) {
+                return $twig->render($theme->getVerifiedEmailTemplate(), [], false, $theme->getFrame());
+            }
+            return $twig->render($theme->getUnVerifiedEmailTemplate(), [], false, $theme->getFrame());
 
         } catch (Exception $e) {
             throw new HttpInternalServerErrorException("Unknown user or wrong verfification token");

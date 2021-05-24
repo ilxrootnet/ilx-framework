@@ -176,9 +176,10 @@ class BasicAuthentication extends AuthenticationInterface
 
         $resetToken = $credentials["token"];
         $basicUser = BasicUserData::fromResetToken($resetToken);
-        if($basicUser->isValid()) {
+        if(!$basicUser->isValid()) {
             return new AuthenticationTaskResult(false, "MISMATCHED_TOKENS");
         }
+
 
         if($basicUser->isResetTokenExpired($configuration["reset_token_expiration_in_secs"])) {
             return new AuthenticationTaskResult(false, "MISMATCHED_TOKENS");
@@ -195,6 +196,10 @@ class BasicAuthentication extends AuthenticationInterface
         }
 
         $basicUser["password"] = $this->hashPassword($credentials["password"])->output;
+        $basicUser["reset_token"] = null;
+        $basicUser["reset_token_date"] = null;
+        $basicUser["failed_login_count"] = 0;
+
         if (PasswordHistory::isInHistory($basicUser->getUserId(), $basicUser["password"], $configuration["password_history_limit"])) {
             return new AuthenticationTaskResult(false, 'PASSWORD_IN_HISTORY');
         }

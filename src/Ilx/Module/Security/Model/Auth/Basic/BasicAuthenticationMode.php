@@ -105,6 +105,11 @@ class BasicAuthenticationMode extends AuthenticationMode
                 "url" => "/auth/reset_password",
                 "handler" => AuthController::class."::renderResetPasswordRequest"
             ],
+            "renderResetPasswordFrame" => [
+                "method" => "GET",
+                "url" => "/auth/basic/reset_password/{token}",
+                "handler" => AuthController::class."::renderResetPassword"
+            ],
             "renderChangePasswordFrame" => [
                 "method" => "GET",
                 "url" => "/auth/change_password",
@@ -182,7 +187,8 @@ class BasicAuthenticationMode extends AuthenticationMode
             "^\/auth\/basic\/register$" => [Role::ANON_USER],
             "^\/auth\/basic\/change_password$" => [Role::AUTH_USER],
             "^\/auth\/basic\/reset_password_request$" => [Role::ANON_USER],
-            "^\/auth\/basic\/reset_password$" => [Role::ANON_USER]
+            "^\/auth\/basic\/reset_password$" => [Role::ANON_USER],
+            "^\/auth\/basic\/reset_password\/\w*$" => [Role::ANON_USER],
         ];
     }
 }
