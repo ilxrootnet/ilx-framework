@@ -83,23 +83,23 @@ class AuthController
         return $twig->render($theme->getResetPasswordRequestForm(), [], false, $theme->getFrame());
     }
 
-+    /**
-+     * Elfelejtett jelszó megváltoztatása form megjelenítése.
-+     * Az emailben kapott reset link hoz ide.
-+     * 
-+     * @return string
-+     * @throws HttpInternalServerErrorException
-+     */
-+    public function renderResetPassword($url_params) {
-+        /** @var Twig $twig */
-+        $twig = Application::get("twig");
-+        /** @var Frame $frame */
-+        $frame = Application::get("frame");
-+        $theme = $frame->getAuthenticationTheme();
-+        return $twig->render($theme->getResetPasswordForm(), [
-+            "token" => $url_params["token"]
-+        ], false, $theme->getFrame());
-+    }
+    /**
+     * Elfelejtett jelszó megváltoztatása form megjelenítése.
+     * Az emailben kapott reset link hoz ide.
+     * 
+     * @return string
+     * @throws HttpInternalServerErrorException
+     */
+    public function renderResetPassword($url_params) {
+        /** @var Twig $twig */
+        $twig = Application::get("twig");
+        /** @var Frame $frame */
+        $frame = Application::get("frame");
+        $theme = $frame->getAuthenticationTheme();
+        return $twig->render($theme->getResetPasswordForm(), [
+            "token" => $url_params["token"]
+        ], false, $theme->getFrame());
+    }
 
     /**
      * Elfelejtett jelszó form megjelenítése.
