@@ -80,7 +80,7 @@ class SessionModule extends IlxModule
                 "sess_id"               => "varbinary(128) NOT NULL",
                 "sess_data"             => "blob NOT NULL",
                 "sess_time"             => "int(10) unsigned NOT NULL",
-                "sess_lifetime"         => "mediumint(9) NOT NULL",
+                "sess_lifetime"         => "int(10) unsigned NOT NULL",
                 "sess_ip"               => "varchar(20) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL",
             ]
         ]);

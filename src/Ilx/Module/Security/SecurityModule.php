@@ -185,7 +185,7 @@ class SecurityModule extends IlxModule
                     "username"              => "varchar(200) DEFAULT NULL",
                     "status_id"             => "int(1) NOT NULL DEFAULT '1'",
                     "email"                 => "varchar(200) NOT NULL",
-                    "phone"                 => "varchar(200) NOT NULL",
+                    "phone"                 => "varchar(200) DEFAULT NULL",
                     "firstname"             => "varchar(256) DEFAULT NULL",
                     "lastname"              => "varchar(256) DEFAULT NULL",
                     "auth_mode"             => "varchar(50) DEFAULT NULL",
