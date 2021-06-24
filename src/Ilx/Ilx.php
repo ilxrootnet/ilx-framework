@@ -5,6 +5,8 @@ namespace Ilx;
 
 
 use Ilx\Module\ModuleManager;
+use Ilx\Module\Resource\ResourceModule;
+use InvalidArgumentException;
 use Kodiak\Application;
 use Kodiak\Core\KodiConf;
 use Kodiak\Exception\ConfigurationException;
@@ -61,6 +63,19 @@ class Ilx
         if($run_scripts) {
             print("Executing modules' init scripts:\n");
             $moduleManager->runInstallScripts($include_templates);
+        }
+
+        // Ha update-lünk és szeretnénk template-ket frissíteni
+        if(!$run_scripts && !$install && $include_templates) {
+            print("Updating included templates:\n");
+            try {
+                /** @var ResourceModule $resourceModule */
+                $resourceModule = ModuleManager::get("Resource");
+                $resourceModule->initScript(true);
+            }
+            catch (InvalidArgumentException $exception) {
+                print("ERROR: You must add Resource module to refresh templates. \n");
+            }
         }
 
         print("Application ".$modules_config["name"]." has been successfully installed. The entry point of the application is web/index.php \n");

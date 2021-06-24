@@ -2,6 +2,7 @@ vendor/
 .idea
 composer.lock
 composer
+composer.phar
 config/*
 web/*
 view/*
