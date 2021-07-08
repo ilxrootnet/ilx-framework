@@ -87,7 +87,7 @@ class BasicAuthentication extends AuthenticationInterface
     public function register(array $credentials): AuthenticationTaskResult
     {
         // Check mandatory fields existence
-        $fields = ["username", "email", "firstname", "lastname", "password", "repassword"];
+        $fields = ["username", "password", "repassword"];
         foreach ($fields as $field) {
             if(!isset($credentials[$field])) {
                 $authResult = new AuthenticationTaskResult(false, "MISSING_FIELD");
@@ -100,9 +100,11 @@ class BasicAuthentication extends AuthenticationInterface
             return $authResult;
         }
 
-        if((User::getUserByEmail($credentials["email"]))->isValidUsername()) {
-            $authResult = new AuthenticationTaskResult(false, "EMAIL_EXISTS");
-            return $authResult;
+        if(isset($credentials["email"])) {
+            if((User::getUserByEmail($credentials["email"]))->isValidUsername()) {
+                $authResult = new AuthenticationTaskResult(false, "EMAIL_EXISTS");
+                return $authResult;
+            }
         }
 
         if($credentials["password"] !== $credentials["repassword"]) {
@@ -116,10 +118,14 @@ class BasicAuthentication extends AuthenticationInterface
          */
         $user = new User([
             "username"  => $credentials["username"],
-            "email"     => $credentials["email"],
+            // "email"     => $credentials["email"],
             "firstname" => $credentials["firstname"],
             "lastname"  => $credentials["lastname"]
         ]);
+        if(!isset($credentials["email"])) {
+            $user["email"] = $credentials["email"];
+        }
+            
         ConnectionManager::getInstance()->persist($user);
 
         $basicUser = new BasicUserData([
@@ -155,7 +161,6 @@ class BasicAuthentication extends AuthenticationInterface
 
         return new AuthenticationTaskResult(true, $user);
     }
-
     /**
      * @param array $credentials
      * @return AuthenticationTaskResult
